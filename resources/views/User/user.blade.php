@@ -6,8 +6,11 @@
     <div class="container-fluid">
         <h1 class="h3 mt-4 mb-3" style="color: black;">User</h1>
         <div class="my-3 d-flex justify-content-start">
-            <a href="add-user" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Add Data
+            <a class="btn btn-primary mr-3" id="addDataUserBtn" data-toggle="modal" data-target="#tambahUserModal">
+                <i class="fas fa-plus"></i> Add Data User
+            </a>
+            <a href="{{ route('users.print') }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-print"></i> Print Data
             </a>
         </div>
         @if(session('success'))
@@ -23,15 +26,14 @@
         @endif
         <div class="card shadow mb-4">
             <div class="card-body">
-            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search">
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>NO</th>
-                                <th>NAMA</th>
-                                <th>USERNAME</th>
-                                <th>ROLE</th>
-                                <th>AKSI</th>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,38 +55,43 @@
                                     @endif
                                 </td>
                                 <td>
-                                <a href="{{ route('users.edit', ['id' => $item->id]) }}" class="btn btn-success mr-2">
-                                    <i class="fa-solid fa-pencil mr-2"></i>Edit
-                                </a>
+                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id }}" data-nama="{{ $item->nama }}" data-username="{{ $item->username }}" data-target="#editUserModal{{ $item->id }}">
+                                        <i class="fa-solid fa-pencil mr-2"></i>Edit
+                                    </button>
                                     <a href="{{ route('users.delete', $item->id) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus {{ $item->nama }}?')">
                                         <i class="fas fa-trash-alt mr-2"></i>Delete
                                     </a>
                                 </td>
                             </tr>
+                            @include('User.edit-user', ['item' => $item])
                         @endforeach
                         </tbody>
-                    </table>
+                    </table>                  
             </div>
+            @foreach($roles as $role)
+                    @include('User.add-user')
+                @endforeach
         </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            console.log('Document ready');
-            $('#searchInput').on('keyup', function () {
-                console.log('Keyup event triggered');
-                var searchText = $(this).val().toLowerCase();
-                console.log('Search text: ' + searchText);
-                filterTable(searchText);
-            });
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+        document.getElementById('addDataUserBtn').addEventListener('click', function() {
+            $('#tambahUserModal').modal('show');
         });
+        $(document).on('click', '.btn-edit', function () {
+            var id = $(this).data('id');
+            var namaUser = $(this).data('nama');
+            var username = $(this).data('username');
+            var modalTarget = $(this).data('target');
 
-        function filterTable(text) {
-            console.log('Filtering table with: ' + text);
-            $('#dataTable tbody tr').filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(text) > -1);
-            });
-        }
-    </script>
+            // Isi nilai formulir modal
+            $(modalTarget).find('input[name="id_user"]').val(id);
+            $(modalTarget).find('#edit_nama_user').val(namaUser);
+            $(modalTarget).find('#edit_username').val(username);
+
+            // Tampilkan modal
+            $(modalTarget).modal('show');
+        });
+</script>
 @endsection

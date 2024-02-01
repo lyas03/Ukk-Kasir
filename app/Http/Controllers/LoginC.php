@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\LogM;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class LoginC extends Controller
@@ -53,16 +53,16 @@ class LoginC extends Controller
         $user = Auth::user();
 
         Auth::logout();
- 
+
         $request->session()->invalidate();
-    
+
         $request->session()->regenerateToken();
 
         LogM::create([
             'id_user' => $user->id,
             'activity' => "{$user->role} Melakukan Logout",
         ]);
-    
+
         return redirect('login');
     }
 }

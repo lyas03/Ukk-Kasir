@@ -8,20 +8,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <!-- <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    
     <title>Big Food | @yield('title')</title>
 
     <!-- Mengatur font -->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Style -->
     <link href="{{ asset('css/sb-admin-2.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
 
 </head>
 
@@ -41,7 +43,6 @@
                 <div class="sidebar-brand-text mx-3">Big Food</div>
             </a>
 
-            <!-- Divider -->
             <hr class="sidebar-divider my-0">
             @if(Auth::check())
                 <a class="sidebar-user d-flex flex-column justify-content-center">
@@ -52,7 +53,7 @@
 
 
             <!-- Divider -->
-            <hr class="sidebar-divider my-0">
+            <hr class="sidebar-divider my-0 mb-2">
 
             <!-- Nav Item - Dashboard -->
             @if(Auth::check())
@@ -61,6 +62,12 @@
                         <a class="nav-link" href="dashboard">
                             <i class="fas fa-solid fa-house-user"></i>
                             <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('kategori') ? 'active' : '' }}">
+                        <a class="nav-link" href="kategori">
+                            <i class="fas fa-solid fa-list-ul"></i>
+                            <span>Kategori</span>
                         </a>
                     </li>
                     <li class="nav-item {{ request()->is('product') ? 'active' : '' }}">
@@ -81,7 +88,7 @@
                             <span>User</span>
                         </a>
                     </li>
-                @elseif(Auth::user()->role == 'kasir')
+                @elseif(Auth::user()->role == 'admin' || Auth::user()->role == 'kasir')
                     <li class="nav-item {{ request()->is('transaksi') ? 'active' : '' }}">
                         <a class="nav-link" href="transaksi">
                             <i class="fas fa-solid fa-cash-register"></i>
@@ -101,19 +108,13 @@
                             <span>Log</span>
                         </a>
                     </li>
-                    <li class="nav-item {{ request()->is('history-transaksi') ? 'active' : '' }}">
-                        <a class="nav-link" href="history-transaksi">
-                            <i class="fas fa-solid fa-clock-rotate-left"></i>
-                            <span>History Transaksi</span>
-                        </a>
-                    </li>
                 @endif
             @endif
             
 
             
             <!-- Divider -->
-            <hr class="sidebar-divider my-0">
+            <hr class="sidebar-divider my-0 mt-2 mb-2">
             <li class="nav-item">
                 <a class="nav-link" href="logout">
                     <i class="fas fa-solid fa-right-from-bracket"></i>
@@ -150,11 +151,14 @@
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-    <!-- <script src="{{ asset('js/jquery.dataTables.js') }}"></script> -->
-    <script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
-    
+    <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+
+    <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
 
 </body>

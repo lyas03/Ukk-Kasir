@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-
-class MejaM extends Model
+class KategoriM extends Model
 {
     use HasFactory;
 
-    protected $table = 'meja';
+    protected $table = 'kategori';
     protected $fillable = [
-        'no_meja', 'status'
+        'id_kategori', 'nama_kategori'
     ];
 }

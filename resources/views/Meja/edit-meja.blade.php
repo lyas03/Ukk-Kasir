@@ -1,25 +1,32 @@
-@extends('layout.layout')
-
-@section('title', 'Edit Meja')
-
-@section('content')
-<div class="container">
-        <h2 class="h3 mt-4 mb-4">Edit Meja</h2>
-        <form method="post" action="{{ route('meja.update', $meja->id) }}">
-            @csrf
-            @method('PATCH')
-            <div class="mb-3">
-                <label for="no_meja" class="form-label">No Meja</label>
-                <input type="text" class="form-control" id="no_meja" name="no_meja" value="{{ $meja->no_meja }}" readonly>
+<div class="modal fade" id="editMejaModal{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="editMejaModalLabel{{ $item->id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editMejaModalLabel">Edit Meja</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="mb-3">
-                <label for="status" class="form-label">Status</label>
-                <select class="form-control" id="status" name="status" required>
-                    <option value="Tersedia" {{ $meja->status == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
-                    <option value="Tidak Tersedia" {{ $meja->status == 'Tidak Tersedia' ? 'selected' : '' }}>Tidak Tersedia</option>
-                </select>
+            <div class="modal-body">
+                <form method="post" action="{{ route('meja.update', ['id' => $item->id]) }}">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id" value="{{ $item->id }}">
+                    <div class="mb-3">
+                        <label for="edit_no_meja" class="form-label">No Meja</label>
+                        <input type="text" class="form-control" id="edit_no_meja" name="no_meja" value="{{ $item->no_meja }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_status" class="form-label">Status</label>
+                        <select class="form-control" id="edit_status" name="status" required>
+                            <option value="Tersedia" {{ $item->status == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                            <option value="Terpakai" {{ $item->status == 'Terpakai' ? 'selected' : '' }}>Terpakai</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary mt-2">Update Meja</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">Edit Meja</button>
-        </form>
+        </div>
     </div>
-@endsection
+</div>

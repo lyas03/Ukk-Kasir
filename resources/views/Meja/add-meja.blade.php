@@ -1,29 +1,23 @@
-@extends('layout.layout')
-
-@section('title', 'Tambah Meja')
-
-@section('content')
-<div class="container">
-        <h2 class="h3 mt-4 mb-4">Tambah Meja</h2>
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+<div class="modal fade" id="tambahMejaModal" tabindex="-1" role="dialog" aria-labelledby="tambahMejakModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tambahMejaModalLabel">Tambah Meja</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{{ route('store.meja') }}">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="no_meja" class="form-label">No Meja</label>
+                            <input type="text" class="form-control" id="no_meja" name="no_meja" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary mt-2">Tambah Meja</button>
+                    </form>
+                </div>
             </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-        <form method="post" action="{{ route('store.meja') }}">
-            @csrf
-            <div class="mb-3">
-                <label for="no_meja" class="form-label">No Meja</label>
-                <input type="number" class="form-control" id="no_meja" name="no_meja" required>
-            </div>
-        
-            <button type="submit" class="btn btn-primary mt-2">Tambah Meja</button>
-        </form>
+        </div>
     </div>
-@endsection

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MejaM;
+use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -78,5 +79,15 @@ class MejaC extends Controller
         } catch (\Exception $e) {
             return redirect()->route('meja')->with('error', 'Gagal Hapus Data, Mohon Coba Lagi');
         }
+    }
+    public function printMeja()
+    {
+    $mejas = MejaM::all();
+
+    // Generate PDF
+    $pdf = PDF::loadView('Meja.print-meja', compact('mejas'));
+
+    // Download the PDF or display it in the browser using 'stream'
+    return $pdf->stream('meja.pdf');
     }
 }

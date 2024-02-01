@@ -8,16 +8,18 @@ use Illuminate\Validation\Rule;
 
 class UserC extends Controller
 {
-    public function users ()
+    public function users()
     {
         $users = User::all();
+        $user = new User();
+        $roles = $user->getEnumRoles();
 
-        return view('/User/user', compact('users'));
+        return view('User.user', compact('users', 'roles'));
     }
     public function addUserForm()
     {
         $user = new User();
-        $roles = $user->getEnumRoles();
+        $roles = $user->getEnumRoles(); 
 
         return view('User.add-user', compact('roles'));
     }

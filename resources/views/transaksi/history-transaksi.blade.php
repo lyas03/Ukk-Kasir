@@ -5,6 +5,11 @@
 @section('content')
     <div class="container-fluid">
         <h1 class="h3 mt-4 mb-3" style="color: black;">History Transaksi</h1>
+        <div class="my-3 d-flex justify-content-start">
+            <a href="{{ route('transaksi.print') }}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-print"></i> Print Data
+            </a>
+        </div>
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="table-responsive">
@@ -16,6 +21,8 @@
                                 <th>NAMA PRODUK</th>
                                 <th>MEJA</th>
                                 <th>TANGGAL</th>
+                                <th>QTY</th>
+                                <th>SUB TOTAL</th>
                                 <th>AKSI</th>
                             </tr>
                         </thead>
@@ -30,6 +37,8 @@
                                 <td>{{ $item->id_produk }}</td>
                                 <td>{{ $item->meja }}</td>
                                 <td>{{ $item->created_at }}</td>
+                                <td>{{ $item->qty }}</td>
+                                <td>{{ $item->sub_total }}</td>
                                 <td>
                                     <a href="{{ route('users.edit', $item->id) }}" class="btn btn-success mr-2">
                                         <i class="fa-solid fa-pencil mr-2"></i>Edit
