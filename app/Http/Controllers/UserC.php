@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserC extends Controller
 {
@@ -27,65 +31,106 @@ class UserC extends Controller
     public function storeUser(Request $request)
     {
         $user = new User;
-        $request->validate([
-            'nama' => 'required',
-            'username' => 'required|unique:users',
-            'password' => 'required',
-            'role' => [
-                'required',
-                Rule::in($user->getEnumRoles()),
-            ],
-        ]);
-    
+
         try {
+            $request->validate([
+                'nama' => 'required',
+                'username' => 'required|unique:users',
+                'password' => 'required',
+                'role' => [
+                    'required',
+                    Rule::in($user->getEnumRoles()),
+                ],
+            ]);
+
             User::create([
                 'nama' => $request->input('nama'),
                 'username' => $request->input('username'),
                 'password' => bcrypt($request->input('password')),
                 'role' => $request->input('role'),
             ]);
-    
+
             return redirect()->route('users')->with('success', 'Berhasil Menambahkan User');
-        } catch (\Exception $e) {
-            return redirect()->route('users')->with('error', 'Gagal menambahkan user, Coba Lagi');
+        } catch (ValidationException $e) {
+            // Tangkap kesalahan validasi
+            return redirect()->route('users')->with('error', 'Gagal Menambahkan User, Username sudah ada.');
+        } catch (Exception $e) {
+            // Tangkap kesalahan umum
+            return redirect()->route('users')->with('error', 'Gagal menambahkan user, Mohon Coba Lagi');
         }
     }
+
     public function edit($id)
     {
         // Fetch the user by ID from the database
         $user = User::findOrFail($id);
 
-        // Fetch roles from your data source
-        $roles = ['admin', 'kasir', 'owner']; // Replace with your actual roles
+        // Fetch roles from the user model method
+        $roles = $user->getEnumRoles();
 
-        return view('/User/edit-user', compact('user', 'roles'));
+        return view('User.edit-user', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'nama' => 'required',
-            'username' => 'required|unique:users,username,'.$id,
-            'role' => 'required|string|unique:users,role,'.$id,
-        ]);
-        try{
+        try {
+            $validatedData = $request->validate([
+                'nama' => 'required',
+                'username' => 'required|unique:users,username,'.$id,
+                'role' => [
+                    'required',
+                    Rule::in((new User())->getEnumRoles()),
+                ],
+            ]);
+
             $user = User::findOrFail($id);
             $user->update($validatedData);
 
             return redirect()->route('users')->with('success', 'Berhasil Update User');
-        }  catch (\Exception $e) {
+        } catch (ValidationException $e) {
+            // Tangkap kesalahan validasi
+            return redirect()->route('users')->with('error', 'Gagal Update User. Username sudah ada');
+        } catch (\Exception $e) {
+            // Tangkap kesalahan umum
             return redirect()->route('users')->with('error', 'Gagal Update User, Mohon Coba Lagi');
         }
     }
     public function deleteUser($id)
-{
-    try {
-        $user = User::findOrFail($id);
-        $user->delete();
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
 
-        return redirect()->route('users')->with('success', 'Berhasil Hapus User');
-    } catch (\Exception $e) {
-        return redirect()->route('users')->with('error', 'Gagal Hapus User, Mohon Coba Lagi');
+            return redirect()->route('users')->with('success', 'Berhasil Hapus User');
+        } catch (\Exception $e) {
+            return redirect()->route('users')->with('error', 'Gagal Hapus User, Mohon Coba Lagi');
+        }
     }
-}
+    public function printUsers()
+    {
+        $users = User::all();
+
+        // Generate PDF
+        $pdf = PDF::loadView('User.print-user', compact('users'));
+
+        // Download the PDF or display it in the browser using 'stream'
+        return $pdf->stream('user.pdf');
+    }
+    public function changePassword(Request $request, $id){
+        try {
+            $request->validate([
+                'password_new' => 'required',
+                'password_confirm' => 'required|same:password_new',
+            ]);
+    
+            $user->update([
+                'password' => Hash::make($request->password_new),
+            ]);
+    
+            return redirect()->route('users')->with('success', 'Password Berhasil Diperbaharui!');
+        } catch (\Exception $e) {
+            // Tangani kesalahan lainnya di sini
+            return redirect()->route('users')->with('error', 'Password baru dan password confirm tidak sama');
+        }
+    }
 }

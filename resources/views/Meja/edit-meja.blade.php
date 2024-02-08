@@ -17,6 +17,10 @@
                         <input type="text" class="form-control" id="edit_no_meja" name="no_meja" value="{{ $item->no_meja }}" readonly>
                     </div>
                     <div class="mb-3">
+                        <label for="edit_jumlah_kursi" class="form-label">Jumlah Kursi</label>
+                        <input type="text" class="form-control" id="edit_jumlah_kursi" name="jumlah_kursi" value="{{ $item->jumlah_kursi }}" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="edit_status" class="form-label">Status</label>
                         <select class="form-control" id="edit_status" name="status" required>
                             <option value="Tersedia" {{ $item->status == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>

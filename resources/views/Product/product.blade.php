@@ -5,32 +5,25 @@
 @section('content')
     <div class="container-fluid">
         <h1 class="h3 mt-4 mb-3" style="color: black;">Produk</h1>
+        @if($userRole === 'admin')
         <div class="my-3 d-flex justify-content-start">
             <a class="btn btn-primary mr-3" id="addDataProdukBtn" data-toggle="modal" data-target="#tambahProdukModal">
-                <i class="fas fa-plus"></i> Add Data Produk
+                <i class="fas fa-plus"></i> Tambah Produk
             </a>
             <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-print"></i> Print Data
+                    <i class="fas fa-file-pdf"></i> Unduh PDF
                 </button>
                 <div class="dropdown-menu" aria-labelledby="filterDropdown">
-                    <a class="dropdown-item" href="{{ route('product.print', ['kategori' => 'makanan']) }}" target="_blank">Print Data Makanan</a>
-                    <a class="dropdown-item" href="{{ route('product.print', ['kategori' => 'minuman']) }}" target="_blank">Print Data Minuman</a>
-                    <a class="dropdown-item" href="{{ route('product.print') }}" target="_blank">Print Semua Data</a>
+                    @foreach($kategories as $kategori)
+                        <a class="dropdown-item" href="{{ route('product.print', ['kategori' => $kategori->nama_kategori]) }}" target="_blank">Print Kategori {{ $kategori->nama_kategori }}</a>
+                    @endforeach
+                    <a class="dropdown-item" href="{{ route('product.print') }}" target="_blank">Print Semua Kategori</a>
                 </div>
             </div>
         </div>
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
         @endif
 
-        @if(session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="table-responsive">
@@ -42,7 +35,9 @@
                                 <th>Kategori</th>
                                 <th>Harga Produk</th>
                                 <th>Stok</th>
-                                <th>Aksi</th>
+                                @if($userRole === 'admin')
+                                    <th>Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -56,27 +51,31 @@
                                 <td>{{ ucfirst($item->kategori->nama_kategori) }}</td>
                                 <td>{{ $item->harga_produk }}</td>
                                 <td>{{ $item->stok }}</td>
-                                
+
+                                @if($userRole === 'admin')
                                 <td>
                                     <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-target="#editProdukModal{{ $item->id }}">
                                         <i class="fa-solid fa-pencil mr-2"></i>Edit
                                     </button>
                                     <a href="{{ route('product.delete', $item->id) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus {{ $item->nama_produk }}?')">
-                                        <i class="fas fa-trash-alt mr-2"></i>Delete
+                                        <i class="fas fa-trash-alt mr-2"></i>Hapus
                                     </a>
                                 </td>
+                                @endif
                             </tr>
                             @include('Product.edit-product', ['item' => $item])
                         @endforeach
                         </tbody>
                     </table>
                 </div>
+                @include('message.success')
+                @include('message.error')
                 @include('Product.add-product')
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script>
         document.getElementById('addDataProdukBtn').addEventListener('click', function() {
             $('#tambahProdukModal').modal('show');
@@ -94,6 +93,28 @@
 
         // Tampilkan modal
         $(modalTarget).modal('show');
-    });
+        });
+        $(document).ready(function() {
+            // Cek apakah ada pesan success dari response JSON
+            @if(session('success'))
+                $('#successModal').modal('show');
+            @endif
+            // Cek apakah ada pesan error dari response JSON
+            @if(session('error'))
+                $('#errorModal').modal('show');
+            @endif
+
+            // Event listener for the "Tutup" button inside the success modal
+            $('#successModal button[data-bs-dismiss="modal"]').on('click', function () {
+                $('#successModal').modal('hide');
+            });
+            $('#errorModal button[data-bs-dismiss="modal"]').on('click', function () {
+                $('#errorModal').modal('hide');
+            });
+        });
+        $(document).ready(function(){
+            $('.dropdown-toggle').dropdown();
+        });
+        
     </script>
 @endsection

@@ -13,11 +13,11 @@
         }
 
         h3 {
-            color: #333;
+            color: #000;
         }
 
         h2 {
-            color: #444;
+            color: #000;
             margin-bottom: 20px;
         }
 
@@ -34,7 +34,7 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #a9a9a9;
             text-align: center;
         }
 
@@ -59,11 +59,12 @@
         <thead>
             <tr>
                 <th>No</th>
+                <th>Nomor Unik</th>
                 <th>Nama Pelanggan</th>
                 <th>Nama Produk</th>
-                <th>Meja</th>
+                <th>Harga Produk</th>
+                <th>Jumlah</th>
                 <th>Tanggal</th>
-                <th>Qty</th>
                 <th>Sub Total</th>
             </tr>
         </thead>
@@ -75,15 +76,16 @@
             @foreach($transaction as $item)
                 <tr>
                     <td>{{ $counter++ }}</td>
+                    <td>{{ $item->nomor_unik }}</td>
                     <td>{{ $item->nama_pelanggan }}</td>
                     <td>{{ $item->id_produk }}</td>
-                    <td>{{ $item->meja }}</td>
+                    <td>{{ $item->harga_produk }}</td>
+                    <td>{{ $item->total_item }}</td>
                     <td>{{ $item->created_at }}</td>
-                    <td>{{ $item->qty }}</td>
-                    <td>{{ $item->sub_total }}</td>
+                    <td>{{ $item->total_harga }}</td>
                 </tr>
                 @php
-                $totalPemasukan += $item->sub_total; // Add sub_total to totalPemasukan
+                $totalPemasukan += $item->total_harga; // Add sub_total to totalPemasukan
                 @endphp
             @endforeach
         </tbody>

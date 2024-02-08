@@ -12,7 +12,11 @@
                         @csrf
                         <div class="mb-3">
                             <label for="no_meja" class="form-label">No Meja</label>
-                            <input type="text" class="form-control" id="no_meja" name="no_meja" required>
+                            <input type="nomber" class="form-control" id="no_meja" name="no_meja" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="jumlah_kursi" class="form-label">Jumlah Kursi</label>
+                            <input type="nomber" class="form-control" id="jumlah_kursi" name="jumlah_kursi" required>
                         </div>
                         
                         <button type="submit" class="btn btn-primary mt-2">Tambah Meja</button>

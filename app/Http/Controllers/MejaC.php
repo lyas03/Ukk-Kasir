@@ -2,48 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MejaM;
 use PDF;
+use Exception;
+use App\Models\MejaM;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class MejaC extends Controller
 {
     public function meja ()
     {
         $meja = MejaM::all();
+        $userRole = auth()->user()->role;
 
-        return view('Meja.meja', compact('meja'));
+        return view('Meja.meja', compact('meja','userRole'));
     }
     public function addMejaForm()
     {
         return view('Meja.add-meja');
     }
     public function storeMeja(Request $request)
-    {
+{
+    try {
         $request->validate([
             'no_meja' => [
                 'required',
                 Rule::unique('meja', 'no_meja'),
             ],
+            'jumlah_kursi' => 'required',
         ]);
 
-        try {
-            MejaM::create([
-                'no_meja' => $request->input('no_meja'),
-                // tambahkan kolom lain jika ada
-            ]);
+        MejaM::create([
+            'no_meja' => $request->input('no_meja'),
+            'jumlah_kursi' => $request->input('jumlah_kursi'),
+        ]);
 
-            return redirect()->route('meja')->with('success', 'Berhasil Menambahkan Data');
-        } catch (\Exception $e) {
-            // Mengecek apakah pesan kesalahan terkait dengan duplikasi kunci
-            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
-                return redirect()->route('meja')->with('error', 'Gagal Menambahkan Data. Nomor Meja sudah ada.');
-            }
-
-            return redirect()->route('meja')->with('error', 'Gagal Menambahkan Data. Pesan Kesalahan: ' . $e->getMessage());
-        }
+        return redirect()->route('meja')->with('success', 'Berhasil Menambahkan Data');
+    } catch (Exception $e) {
+        // Tangkap kesalahan umum
+        return redirect()->route('meja')->with('error', 'Gagal Menambahkan Nomor Meja');
     }
+}
 
     public function edit($id)
     {
@@ -65,7 +65,7 @@ class MejaC extends Controller
             $meja->update($validatedData);
     
             return redirect()->route('meja')->with('success', 'Berhasil Update Data');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect()->route('meja')->with('error', 'Gagal Update Data, Mohon Coba Lagi');
         }
     }
@@ -76,18 +76,43 @@ class MejaC extends Controller
             $meja->delete();
 
             return redirect()->route('meja')->with('success', 'Berhasil Hapus Data');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return redirect()->route('meja')->with('error', 'Gagal Hapus Data, Mohon Coba Lagi');
         }
     }
     public function printMeja()
     {
-    $mejas = MejaM::all();
+        $mejas = MejaM::all();
 
-    // Generate PDF
-    $pdf = PDF::loadView('Meja.print-meja', compact('mejas'));
+        $jumlah_meja_tersedia = $mejas->where('status', 'Tersedia')->count();
+        $jumlah_meja_terpakai = $mejas->where('status', 'Terpakai')->count();
 
-    // Download the PDF or display it in the browser using 'stream'
-    return $pdf->stream('meja.pdf');
+        // Generate PDF
+        $pdf = PDF::loadView('Meja.print-meja', compact('mejas', 'jumlah_meja_tersedia', 'jumlah_meja_terpakai'));
+
+        // Download the PDF or display it in the browser using 'stream'
+        return $pdf->stream('meja.pdf');
+    }
+    public function changeStatus($id)
+    {
+        try {
+            // Temukan meja berdasarkan ID
+            $meja = MejaM::findOrFail($id);
+
+            // Periksa dan ubah status meja
+            if ($meja->status == 'Terpakai') {
+                $meja->status = 'Tersedia';
+                $meja->save();
+
+                return redirect()->route('meja')->with('success', 'Status meja diubah menjadi tersedia.');
+            } else {
+                // Tambahkan pesan jika status meja tidak valid
+                return redirect()->route('meja')->with('error', 'Meja tidak dalam status terpakai.');
+            }
+        } catch (\Exception $e) {
+        dd($e->getMessage());
+            // Tambahkan pesan error jika terjadi kesalahan
+            return redirect()->route('meja')->with('error', 'Gagal mengubah status meja.');
+        }
     }
 }

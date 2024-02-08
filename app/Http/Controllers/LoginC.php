@@ -20,33 +20,20 @@ class LoginC extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-
-            switch ($user->role) {
-                case 'admin':
-                    LogM::create([
-                        'id_user' => $user->id,
-                        'activity' => "Admin Melakukan Login",
-                    ]);
-                    return redirect('/dashboard');
-                case 'kasir':
-                    LogM::create([
-                        'id_user' => $user->id,
-                        'activity' => "Kasir Melakukan Login",
-                    ]);
-                    return redirect('/transaksi');
-                case 'owner':
-                    LogM::create([
-                        'id_user' => $user->id,
-                        'activity' => "Owner Melakukan Login",
-                    ]);
-                    return redirect('/log');
-                default:
-                    return redirect('/login');
-            }
+    
+            // Catat aktivitas login
+            LogM::create([
+                'id_user' => $user->id,
+                'activity' => "{$user->role} Melakukan Login",
+            ]);
+    
+            // Arahkan semua peran ke halaman dashboard
+            return redirect('/dashboard');
         }
 
+        // Jika autentikasi gagal, set session error dan kembalikan ke halaman login
         return redirect('/login')->withInput($request->only('username'))
-            ->withErrors(['login' => 'Email atau password salah']);
+            ->with(['login' => 'Email atau password salah']);
     }
     public function logout(Request $request)
     {
@@ -64,5 +51,9 @@ class LoginC extends Controller
         ]);
 
         return redirect('login');
+    }
+    public function showErrorPage()
+    {
+        return view('message.page-eror');
     }
 }

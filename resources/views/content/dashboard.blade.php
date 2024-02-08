@@ -9,7 +9,6 @@
         </div>
 
         <div class="row">
-            <!-- Card for Products -->
             <div class="col-xl-4 mb-4">
                 <a href="{{ route('product') }}" class="card border-left py-2 rounded-right text-decoration-none">
                     <div class="card-body">
@@ -57,6 +56,23 @@
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-solid fa-user fa-3x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <a class="card border-left py-2 rounded-right text-decoration-none">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Pendapatan</div>
+                                <div class="text-lg mb-0 font-weight-bold">{{ $totalMeja }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-solid fa-chair fa-3x text-primary"></i>
                             </div>
                         </div>
                     </div>

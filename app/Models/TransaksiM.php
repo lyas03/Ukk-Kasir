@@ -13,7 +13,7 @@ class TransaksiM extends Model
     
     protected $table = 'transactions';
     protected $fillable = [
-        'id_produk', 'qty','sub_total', 'nama_pelanggan','nomor_unik','meja','uang_bayar','uang_kembali'
+        'id_produk', 'total_item','total_harga', 'nama_pelanggan','nomor_unik','meja','uang_bayar','uang_kembali'
     ];
     public function produk()
     {

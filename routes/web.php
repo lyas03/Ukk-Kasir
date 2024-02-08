@@ -9,6 +9,7 @@ use App\Http\Controllers\KategoriC;
 use App\Http\Controllers\DashboardC;
 use App\Http\Controllers\TransaksiC;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DetailTransaksiC;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +31,18 @@ Route::post('login', [LoginC::class, 'authenticate'])->name('login');
 
 Route::get('logout', [LoginC::class, 'logout'])->middleware('auth');
 
-
-
-// Route::middleware(['checkRole:admin'])->group(function () {
+Route::middleware(['checkRole:admin,kasir,owner'])->group(function () {
     Route::get('dashboard', [DashboardC::class, 'dashboard'])->name('dashboard');
-    
+    Route::get('/history-transaksi', [TransaksiC::class, 'showHistoryForm'])->name('history.transaksi');
+    Route::get('/print-transaksi', [TransaksiC::class, 'printTransaksi'])->name('transaksi.print');
+});
+
+Route::middleware(['checkRole:admin,kasir'])->group(function () {
     Route::get('product', [ProductC::class, 'product'])->name('product');
+    Route::get('meja', [MejaC::class, 'meja'])->name('meja');
+});
+
+Route::middleware(['checkRole:admin'])->group(function () {
     Route::get('/add-product', [ProductC::class, 'addProductForm'])->name('add.product.form');
     Route::post('/store-product', [ProductC::class, 'storeProduct'])->name('store.product');
     Route::get('/product/{id}/edit', [ProductC::class, 'edit'])->name('product.edit');
@@ -48,31 +55,42 @@ Route::get('logout', [LoginC::class, 'logout'])->middleware('auth');
     Route::post('/store-user', [UserC::class, 'storeUser'])->name('store.user');
     Route::get('/users/{id}/edit', [UserC::class, 'edit'])->name('users.edit');
     Route::put('/users/{id}', [UserC::class, 'update'])->name('users.update');
+    Route::put('/users/{id}/change', [UserC::class, 'changePassword'])->name('users.change');
     Route::get('/users/delete/{id}', [UserC::class, 'deleteUser'])->name('users.delete');
     Route::get('/print-users', [UserC::class, 'printUsers'])->name('users.print');
 
-    Route::get('meja', [MejaC::class, 'meja'])->name('meja');
     Route::get('/add-meja', [MejaC::class, 'addMejaForm'])->name('add.meja.form');
     Route::post('/store-meja', [MejaC::class, 'storeMeja'])->name('store.meja');
     Route::get('/meja/delete/{id}', [MejaC::class, 'deleteMeja'])->name('meja.delete');
     Route::get('/meja/{id}/edit', [MejaC::class, 'edit'])->name('meja.edit');
     Route::put('/meja/{id}', [MejaC::class, 'update'])->name('meja.update');
     Route::get('/print-meja', [MejaC::class, 'printMeja'])->name('meja.print');
-
-    Route::get('transaksi', [TransaksiC::class, 'showForm'])->name('transaksi');
-    Route::post('/store-transaksi', [TransaksiC::class, 'store'])->name('store.transaksi');
-    // Route::get('/transaksi/{id}/data', [DetailTransaksiC::class, 'data'])->name('transaksi.data');
-    Route::get('history-transaksi', [TransaksiC::class, 'showHistoryForm'])->name('history-transaksi');
-    Route::get('/print-transaksi', [TransaksiC::class, 'printTransaksi'])->name('transaksi.print');
-
-    Route::get('log', [LogC::class, 'log'])->name('log');
-
+    
     Route::get('kategori', [KategoriC::class,'kategori'])->name('kategori');
     Route::post('/store-kategori', [KategoriC::class, 'storeKategori'])->name('store.kategori');
-// });
+    Route::get('/kategori/delete/{id_kategori}', [KategoriC::class, 'deleteKategori'])->name('kategori.delete');
+    Route::get('/kategori/{id_kategori}/edit', [KategoriC::class, 'edit'])->name('kategori.edit');
+    Route::put('/kategori/{id_kategori}', [KategoriC::class, 'update'])->name('kategori.update');
+});
 
-// Route::middleware(['checkRole:kasir'])->group(function () {
+Route::middleware(['checkRole:kasir'])->group(function () {
+    Route::get('/transaksi', [TransaksiC::class, 'index'])->name('transaksi.index');
+    Route::get('/transaksi/{id}', [TransaksiC::class, 'show'])->name('transaksi.show');
+    Route::delete('/transaksi/{id}', [TransaksiC::class, 'destroy'])->name('transaksi.destroy');
+    Route::post('/transaksi/store', [TransaksiC::class, 'store'])->name('transaksi.store');
+    Route::get('/transaksi-selesai/{transaksi}', [TransaksiC::class, 'selesai'])->name('transaksi.selesai');
+    Route::get('/print-struk', [TransaksiC::class, 'printStruk'])->name('struk.print');
+
+    Route::put('/meja/{id}/change', [MejaC::class, 'changeStatus'])->name('meja.change');
+
+});
+
+Route::middleware(['checkRole:owner'])->group(function () {
+    Route::get('log', [LogC::class, 'log'])->name('log');
+    Route::get('search/log', [LogC::class, 'search'])->name('log.search');
+});
+
+
     
 
     
-// });

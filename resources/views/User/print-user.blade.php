@@ -13,11 +13,11 @@
         }
 
         h3 {
-            color: #333;
+            color: #000;
         }
 
         h2 {
-            color: #444;
+            color: #000;
             margin-bottom: 20px;
         }
 
@@ -34,12 +34,8 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #a9a9a9;
             text-align: center;
-        }
-
-        tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
         }
 
         .ttd {

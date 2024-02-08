@@ -11,40 +11,68 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\DetailTransaksiM;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 
 class TransaksiC extends Controller
 {
+    public function index()
+    {   
+        $products = ProdukM::orderBy('nama_produk')->get();
+        $randomNumber = mt_rand(1000000000, 9999999999);
+        $meja = MejaM::where('status', 'Tersedia')->get();
+
+        return view('transaksi.transaksi', compact('products', 'meja','randomNumber'));
+    }
+
     public function showForm(Request $request)
     {
         $products = ProdukM::orderBy('nama_produk')->get();
         $mejas = MejaM::where('status', 'Tersedia')->get();
+        $id_transaksi = TransaksiM::where('id_transaksi')->get();
 
-        return view('transaksi.transaksi', compact('products', 'mejas'));
+        return view('transaksi.transaksi', compact('products', 'mejas','id_transaksi'));
     }
     public function store(Request $request)
     {
-        $penjualan = Penjualan::findOrFail($request->id_penjualan);
-        $penjualan->id_member = $request->id_member;
-        $penjualan->total_item = $request->total_item;
-        $penjualan->total_harga = $request->total;
-        $penjualan->diskon = $request->diskon;
-        $penjualan->bayar = $request->bayar;
-        $penjualan->diterima = $request->diterima;
-        $penjualan->update();
+        try {
+            // Validasi data yang diterima dari formulir
+            $request->validate([
+                // Sesuaikan dengan kolom-kolom di tabel transaksi
+                'nomor_unik' => 'required',
+                'nama_pelanggan' => 'required',
+                'meja' => 'nullable',
+                'id_produk' => 'required',
+                'total_item' => 'required|numeric|min:1',
+                'total_harga' => 'required|numeric|min:0',
+                'uang_bayar' => 'required|numeric|min:0',
+                'uang_kembali' => 'required|numeric|min:0',
+            ]);
 
-        $detail = PenjualanDetail::where('id_penjualan', $penjualan->id_penjualan)->get();
-        foreach ($detail as $item) {
-            $item->diskon = $request->diskon;
-            $item->update();
+            // Simpan data transaksi ke database
+            $transaksi = TransaksiM::create($request->all());
 
-            $produk = Produk::find($item->id_produk);
-            $produk->stok -= $item->jumlah;
-            $produk->update();
+            return redirect()->route('transaksi.selesai', compact('transaksi'));
+        } catch (\Exception $e) {
+            // Handle kesalahan jika terjadi
+            return redirect()->route('transaksi.index')->with('error', 'Gagal melakukan transaksi');
         }
-
-        return redirect()->route('transaksi.selesai');
     }
 
+    public function selesai()
+    {
+        $transaksi = TransaksiM::with('produk')->latest()->first();
+
+        // Tampilkan view transaksi_selesai dengan menyertakan data transaksi
+        return view('transaksi.transaksi-selesai', compact('transaksi'));
+    }  
+    public function printStruk()
+    {
+        $transaksi = TransaksiM::with('produk')->latest()->first();
+        $pdf = PDF::loadView('transaksi.struk', compact('transaksi'));
+        
+        // Download the PDF or display it in the browser using 'stream'
+        return $pdf->stream('struk.pdf');
+    }
 
     public function showHistoryForm()
     {

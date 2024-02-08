@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('meja', function (Blueprint $table) {
             $table->integer('id')->autoIncrement();
             $table->integer('no_meja')->unique();
+            $table->integer('jumlah_kursi');
             $table->string('status')->default('Tersedia');
             $table->timestamps();
         });

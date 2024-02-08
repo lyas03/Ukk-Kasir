@@ -17,7 +17,7 @@
                         <div class="mb-3">
                             <label for="id_kategori" class="form-label">Kategori</label>
                             <select class="form-control" id="id_kategori" name="id_kategori" required>
-                                <option value="" selected disabled></option>
+                                <option value="" selected disabled>Pilih Kategori</option>
                                 @foreach($kategoris as $kategori)
                                     <option value="{{ $kategori }}">{{ ucfirst($kategori) }}</option>
                                 @endforeach

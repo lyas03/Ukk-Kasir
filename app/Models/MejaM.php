@@ -13,6 +13,6 @@ class MejaM extends Model
 
     protected $table = 'meja';
     protected $fillable = [
-        'no_meja', 'status'
+        'no_meja', 'jumlah_kursi', 'status'
     ];
 }

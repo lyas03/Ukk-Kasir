@@ -13,11 +13,11 @@
         }
 
         h3 {
-            color: #333;
+            color: #000;
         }
 
         h2 {
-            color: #444;
+            color: #000;
             margin-bottom: 20px;
         }
 
@@ -34,7 +34,7 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #a9a9a9;
             text-align: center;
         }
 
@@ -44,6 +44,15 @@
         }
         .ttd h4 {
             font-weight: normal;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        li {
+            margin-right: 10px;
         }
 
     </style>
@@ -56,6 +65,7 @@
             <tr>
                 <th>No</th>
                 <th>No Meja</th>
+                <th>Jumlah Kursi</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -67,11 +77,16 @@
                 <tr>
                     <td>{{ $counter++ }}</td>
                     <td>{{ $item->no_meja }}</td>
+                    <td>{{ $item->jumlah_kursi }}</td>
                     <td>{{ $item->status }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+    <ul>
+        <li>Meja Tersedia: {{ $jumlah_meja_tersedia }}</li>
+        <li>Meja Terpakai: {{ $jumlah_meja_terpakai }}</li>
+    </ul>
     @if(Auth::check())
         <div class="ttd">
             <h4>Subang, {{ now()->format('d F Y') }}</h4><br>

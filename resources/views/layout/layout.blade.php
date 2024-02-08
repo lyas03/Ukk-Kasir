@@ -57,19 +57,52 @@
 
             <!-- Nav Item - Dashboard -->
             @if(Auth::check())
-                @if(Auth::user()->role == 'admin')
+                @php
+                    $userRole = Auth::user()->role;
+                @endphp
+                @if(in_array($userRole, ['admin', 'kasir','owner']))
                     <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
                         <a class="nav-link" href="dashboard">
                             <i class="fas fa-solid fa-house-user"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
+                    <li class="nav-item {{ request()->is('history-transaksi') ? 'active' : '' }}">
+                        <a class="nav-link" href="history-transaksi">
+                            <i class="fas fa-solid fa-clock-rotate-left"></i>
+                            <span>History Transaksi</span>
+                        </a>
+                    </li>
+                @endif
+                @if($userRole == 'admin')
                     <li class="nav-item {{ request()->is('kategori') ? 'active' : '' }}">
                         <a class="nav-link" href="kategori">
                             <i class="fas fa-solid fa-list-ul"></i>
                             <span>Kategori</span>
                         </a>
                     </li>
+                    <li class="nav-item {{ request()->is('users', 'edit-user') ? 'active' : '' }}">
+                        <a class="nav-link" href="users">
+                            <i class="fas fa-solid fa-user"></i>
+                            <span>User</span>
+                        </a>
+                    </li>
+                @elseif($userRole == 'kasir')
+                    <li class="nav-item {{ request()->is('transaksi') ? 'active' : '' }}">
+                        <a class="nav-link" href="transaksi">
+                            <i class="fas fa-solid fa-cash-register"></i>
+                            <span>Transaksi</span>
+                        </a>
+                    </li>
+                @elseif($userRole == 'owner')
+                    <li class="nav-item {{ request()->is('log', 'search/log') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('log') }}">
+                            <i class="fas fa-solid fa-clipboard-list"></i>
+                            <span>Log</span>
+                        </a>
+                    </li>
+                @endif
+                @if(in_array($userRole, ['admin', 'kasir']))
                     <li class="nav-item {{ request()->is('product') ? 'active' : '' }}">
                         <a class="nav-link" href="product">
                             <i class="fas fa-solid fa-boxes-stacked"></i>
@@ -80,32 +113,6 @@
                         <a class="nav-link" href="meja">
                             <i class="fas fa-solid fa-chair"></i>
                             <span>Meja</span>
-                        </a>
-                    </li>
-                    <li class="nav-item {{ request()->is('users', 'edit-user') ? 'active' : '' }}">
-                        <a class="nav-link" href="users">
-                            <i class="fas fa-solid fa-user"></i>
-                            <span>User</span>
-                        </a>
-                    </li>
-                @elseif(Auth::user()->role == 'admin' || Auth::user()->role == 'kasir')
-                    <li class="nav-item {{ request()->is('transaksi') ? 'active' : '' }}">
-                        <a class="nav-link" href="transaksi">
-                            <i class="fas fa-solid fa-cash-register"></i>
-                            <span>Transaksi</span>
-                        </a>
-                    </li>
-                    <li class="nav-item {{ request()->is('history-transaksi') ? 'active' : '' }}">
-                        <a class="nav-link" href="history-transaksi">
-                            <i class="fas fa-solid fa-clock-rotate-left"></i>
-                            <span>History Transaksi</span>
-                        </a>
-                    </li>
-                @elseif(Auth::user()->role == 'owner')
-                    <li class="nav-item {{ request()->is('log') ? 'active' : '' }}">
-                        <a class="nav-link" href="log">
-                            <i class="fas fa-solid fa-clipboard-list"></i>
-                            <span>Log</span>
                         </a>
                     </li>
                 @endif

@@ -12,6 +12,7 @@ class ProdukM extends Model
     use HasFactory;
 
     protected $table = 'products';
+    protected $primaryKey = 'id_produk';
     protected $fillable = ['id_kategori','nama_produk', 'harga_produk','stok'];
 
     public function transactions()

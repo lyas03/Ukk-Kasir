@@ -13,11 +13,11 @@
         }
 
         h3 {
-            color: #333;
+            color: #000;
         }
 
         h2 {
-            color: #444;
+            color: #000;
             margin-bottom: 20px;
         }
 
@@ -34,7 +34,7 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #a9a9a9;
             text-align: center;
         }
 
@@ -68,13 +68,7 @@
                 <tr>
                     <td>{{ $counter++ }}</td>
                     <td>{{ $produk->nama_produk }}</td>
-                    <td>
-                        @if($produk->kategori === 'makanan')
-                        Makanan
-                        @elseif($produk->kategori === 'minuman')
-                        Minuman
-                        @endif
-                    </td>
+                    <td>{{ $produk->kategori->nama_kategori }}</td>
                     <td>{{ $produk->harga_produk }}</td>
                 </tr>
             @endforeach
