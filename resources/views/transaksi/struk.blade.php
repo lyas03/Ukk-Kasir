@@ -9,93 +9,86 @@
             font-family: "consolas", sans-serif;
         }
         body {
-            margin: 0; /* Reset default margin to remove extra space */
+            margin: 0;
         }
         .wrapper {
-            max-width: 400px;
-            border: 2px solid #000;
-            padding: 10px;
-            margin: auto; /* Center the wrapper */
+            max-width: 100%;
+            position: absolute;
+            top: 0;
         }
         p {
             display: block;
-            margin: 3px;
-            font-size: 10pt;
+            font-size: 7pt;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
         table td {
-            font-size: 9pt;
+            font-size: 7pt;
         }
+
         .text-center {
-            text-align: center;
-        }
-        .text-right {
-            text-align: right;
+            font-size: 7pt;
         }
         h2 {
             text-align: center;
+            font-size: 20pt;
+            margin-top: 0;
         }
 
-        @media print {
-            @page {
-                margin: 0;
-                size: 75mm;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="wrapper">
         <div class="struk-content">
-            <h2 class="struk-heading">Struk Transaksi</h2>
+            <h2>Big Food</h2>
+            <p class="text-center">======================================</p>
+            <p>Tanggal : {{ date('d-m-Y') }}</p>
+            <p>Jam : {{ date('H:i:s') }}</p>
+            <p>No Unik : {{ $transaksiData->nomor_unik }}</p>
+            <p>Nama Pelanggan : {{ $transaksiData->nama_pelanggan }}</p>
+            <p>No.Meja : {{ $transaksiData->meja }}</p>
+            @if(Auth::check())
+                <p>Kasir : {{ Auth::user()->nama }}</p>
+            @endif
+            <p class="text-center">======================================</p>
 
-            <div>
-                <p style="float: left;">Tanggal : {{ date('d-m-Y') }}</p>
-                @if(Auth::check())
-                <p style="float: right">{{ Auth::user()->nama }}</p>
-                @endif
-            </div>
-            <div class="clear-both" style="clear: both;"></div>
-            <p>No Unik : {{ $transaksi->nomor_unik }}</p>
-            <p class="text-center">===========================================</p>
-
-            <br>
             <table width="100%" style="border: 0;">
-                <tr>
-                    <td colspan="3">{{ ($transaksi->id_produk) }}</td>
-                </tr>
-                <tr>
-                    <td>{{ $transaksi->total_item }} x {{ number_format($transaksi->harga_produk) }}</td>
-                    <td></td>
-                    <td class="text-right">{{ number_format($transaksi->total_harga) }}</td>
-                </tr>
+                @foreach($transaksiData->detailTransaksis as $detailTransaksi)
+                    @php
+                        $produk = $detailTransaksi->produk;
+                    @endphp
+                    <tr>
+                        <td colspan="3">{{ $produk->nama_produk }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ $detailTransaksi->jumlah }} x {{ number_format($produk->harga_produk) }}</td>
+                        <td></td>
+                        <td class="text-right">{{ number_format($detailTransaksi->jumlah * $produk->harga_produk) }}</td>
+                    </tr>
+                @endforeach
             </table>
-            <p class="text-center">-----------------------------------</p>
+            <p class="text-center">-------------------------------------------------------------------</p>
 
             <table width="100%" style="border: 0;">
                 <tr>
-                    <td>Total Harga:</td>
-                    <td class="text-right">{{ number_format($transaksi->total_harga) }}</td>
+                    <td class="text-right">Total Harga:</td>
+                    <td class="text-right">{{ number_format($detailTransaksi->total_harga) }}</td>
                 </tr>
                 <tr>
-                    <td>Total Item:</td>
-                    <td class="text-right">{{ number_format($transaksi->total_item) }}</td>
+                    <td class="text-right">Uang Bayar:</td>
+                    <td class="text-right">{{ number_format($transaksiData->uang_bayar) }}</td>
                 </tr>
                 <tr>
-                    <td>Total Bayar:</td>
-                    <td class="text-right">{{ number_format($transaksi->uang_bayar) }}</td>
-                </tr>
-                <tr>
-                    <td>Diterima:</td>
-                    <td class="text-right">{{ number_format($transaksi->uang_kembali + $transaksi->uang_bayar) }}</td>
-                </tr>
-                <tr>
-                    <td>Kembali:</td>
-                    <td class="text-right">{{ number_format($transaksi->uang_kembali) }}</td>
+                    <td class="text-right">Uang Kembali:</td>
+                    <td class="text-right">{{ number_format($transaksiData->uang_kembali) }}</td>
                 </tr>
             </table>
 
-            <p class="text-center">===========================================</p>
-            <p class="text-center">-- TERIMA KASIH --</p>
+            <p class="text-center">======================================</p>
+            <p class="text-center">-- TERIMA KASIH ATAS KUNJUNGAN ANDA --</p>
         </div>
     </div>
 

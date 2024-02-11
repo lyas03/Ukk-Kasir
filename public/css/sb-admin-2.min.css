@@ -149,13 +149,16 @@ img {
     vertical-align: middle;
     border-style: none;
 }
+.no-underline {
+    text-decoration: none;
+}
 svg {
     overflow: hidden;
     vertical-align: middle;
 }
 table {
     border-collapse: collapse;
-    text-align: center;
+    align-items: center;
 }
 caption {
     padding-top: 0.75rem;
@@ -1344,6 +1347,9 @@ pre code {
 .table th {
     padding: 0.4rem;
     border-top: 2px solid #e3e6f0;
+}
+.table tbody {
+    text-align: center;;
 }
 .table-bordered td,
 .table-bordered th {

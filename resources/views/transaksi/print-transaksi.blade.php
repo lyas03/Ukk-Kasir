@@ -59,13 +59,12 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nomor Unik</th>
                 <th>Nama Pelanggan</th>
-                <th>Nama Produk</th>
-                <th>Harga Produk</th>
-                <th>Jumlah</th>
+                <th>Produk</th>
+                <th>Total Harga</th>
+                <th>Uang Bayar</th>
+                <th>Uang Kembali</th>
                 <th>Tanggal</th>
-                <th>Sub Total</th>
             </tr>
         </thead>
         <tbody>
@@ -76,23 +75,37 @@
             @foreach($transaction as $item)
                 <tr>
                     <td>{{ $counter++ }}</td>
-                    <td>{{ $item->nomor_unik }}</td>
                     <td>{{ $item->nama_pelanggan }}</td>
-                    <td>{{ $item->id_produk }}</td>
-                    <td>{{ $item->harga_produk }}</td>
-                    <td>{{ $item->total_item }}</td>
+                    <td>
+                        @php
+                            $totalHarga = 0;
+                        @endphp
+                        @foreach($transactions as $transaction)
+                            @if($transaction->id_transaction == $item->id)
+                                @php
+                                    $produk = \App\Models\ProdukM::find($transaction->id_produk);
+                                @endphp
+                                   - {{ $produk->nama_produk }} Rp. {{ number_format($produk->harga_produk, 0, ',', '.') }} x {{ $transaction->jumlah }}<br>
+                                @php
+                                    $totalHarga = $transaction->total_harga;
+                                @endphp
+                            @endif
+                        @endforeach
+                    </td>
+                    <td>{{ number_format($totalHarga, 0, ',', '.') }}</td>
+                    <td>{{ number_format($item->uang_bayar, 0, ',', '.') }}</td>
+                    <td>{{ number_format($item->uang_kembali, 0, ',', '.') }}</td>
                     <td>{{ $item->created_at }}</td>
-                    <td>{{ $item->total_harga }}</td>
                 </tr>
                 @php
-                $totalPemasukan += $item->total_harga; // Add sub_total to totalPemasukan
+                $totalPemasukan += $totalHarga; // Add sub_total to totalPemasukan
                 @endphp
             @endforeach
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="6" class="tfoot">Total Pemasukan</td>
-            <td class="tfoot">{{ $totalPemasukan }}</td>
+            <td colspan="3" class="tfoot">Total Pemasukan</td>
+            <td colspan="4" class="tfoot">{{ number_format($totalPemasukan, 0, ',', '.') }}</td>
         </tr>
     </tfoot>
     </table>

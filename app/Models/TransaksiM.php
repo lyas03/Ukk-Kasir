@@ -12,16 +12,17 @@ class TransaksiM extends Model
     use HasFactory;
     
     protected $table = 'transactions';
+    protected $appends = ['nomor_unik'];
     protected $fillable = [
-        'id_produk', 'total_item','total_harga', 'nama_pelanggan','nomor_unik','meja','uang_bayar','uang_kembali'
+        'nama_pelanggan','nomor_unik','meja','uang_bayar','uang_kembali','pilihan_makan'
     ];
     public function produk()
     {
-        return $this->belongsTo(ProdukM::class, 'no_produk', 'id');
+        return $this->hasMany(DetailTransaksiM::class, 'id_transaction');
     }
     public function detailTransaksis()
     {
-        return $this->hasMany(DetailTransaksiM::class);
+        return $this->hasMany(DetailTransaksiM::class, 'id_transaction');
     }
 
 }

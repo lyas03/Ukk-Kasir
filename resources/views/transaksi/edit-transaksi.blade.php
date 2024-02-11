@@ -11,34 +11,32 @@
                     <div class="box-body">
                         <form class="form-user" action="{{ route('transaksi.store') }}" method="POST">
                             @csrf
+                            @method('PUT')
                             <div class="form-group row">
                                 <label for="nomor_unik" class="col-lg-2 col-form-label">Nomor Unik</label>
                                 <div class="col-lg-4">
-                                    <input type="text" class="form-control" id="nomor_unik" name="nomor_unik" value="{{ $randomNumber }}" readonly>
+                                    <input type="text" class="form-control" id="nomor_unik" name="nomor_unik" value="{{ $transaksi->nomor_unik }}" readonly>
                                 </div>
                                 <label for="pilihan_makan" class="col-lg-2 col-form-label">Pilihan Makan</label>
-                                    <div class="col-lg-4">
-                                        <select class="form-control" id="pilihan_makan" name="pilihan_makan" required>
-                                            <option value="" disabled selected hidden>Pilih Opsi</option>
-                                            <option value="makan_di_tempat">Makan di Tempat</option>
-                                            <option value="bawa_pulang">Bawa Pulang</option>
-                                        </select>
-                                    </div>
+                                <div class="col-lg-4">
+                                    <input type="text" class="form-control" id="pilihan_makan" name="pilihan_makan" value="{{ ucwords(str_replace('_', ' ', $transaksi->pilihan_makan)) }}" readonly>
+                                </div>
                             </div>
                             <div class="form-group row">
                                 <label for="nama_pelanggan" class="col-lg-2 col-form-label">Nama Pelanggan</label>
                                 <div class="col-lg-4">
-                                    <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" required>
+                                    <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" value="{{ $transaksi->nama_pelanggan }}" required>
                                 </div>
                                 <label for="meja" class="col-lg-2 col-form-label">No Meja</label>
-                                    <div class="col-lg-4">
-                                        <select class="form-control" id="meja" name="meja">
-                                            @foreach($meja as $item)
-                                                <option value="" disabled selected hidden></option>
-                                                <option value="{{ $item->no_meja }}">{{ $item->no_meja }} - {{ $item->jumlah_kursi}}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
+                                <div class="col-lg-4">
+                                    <select class="form-control" id="meja" name="meja">
+                                        @foreach($meja as $item)
+                                        <option value="{{ $item->no_meja }}" {{ $transaksiData->meja == $item->no_meja ? 'selected' : '' }}>
+                                            {{ $item->no_meja }} - {{ $item->jumlah_kursi}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group row mt-5">
                                 <label for="id_produk" class="col-lg-2 col-form-label">Nama Produk</label>
@@ -54,8 +52,8 @@
                                 </div>
                             </div>
                             <div class="row">
-                                    <div class="col-md-12 table-responsive">
-                                        <table class="table table-striped table-bordered">
+                                <div class="col-md-12 table-responsive">
+                                <table class="table table-striped table-bordered">
                                             <thead class="bg-dark">
                                                 <tr>
                                                     <th>No</th>
@@ -66,7 +64,17 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="transaksiItem" style="text-align: left;">
-
+                                            @foreach ($transaksiData->detailTransaksis as $index => $detail)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $detail->produk->nama_produk }}</td>
+                        <td>
+                            <input type="number" name="edited_quantities[]" class="form-control" value="{{ $detail->jumlah }}" min="1">
+                            <input type="hidden" name="edited_ids[]" value="{{ $detail->produk->id_produk }}">
+                        </td>
+                        <td>Rp.{{ number_format($detail->harga_produk) }}</td>
+                    </tr>
+                    @endforeach
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -77,18 +85,18 @@
                                                 </tr>
                                             </tfoot>
                                         </table>
-                                    </div>
                                 </div>
+                            </div>
                                 <div class="row mt-3">
                                     <label for="uang_bayar" class="col-lg-2 col-form-label">Uang Bayar</label>
                                     <div class="col-lg-4">
-                                        <input type="number" class="form-control" id="uang_bayar" name="uang_bayar" oninput="hitungUangKembali()" required>
+                                        <input type="number" class="form-control" id="uang_bayar" name="uang_bayar" oninput="hitungUangKembali()" value="{{ $transaksi->uang_bayar }}" required>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <label for="uang_kembali" class="col-lg-2 col-form-label">Uang Kembali</label>
                                     <div class="col-lg-4">
-                                        <input type="number" class="form-control" id="uang_kembali" name="uang_kembali" readonly>
+                                        <input type="number" class="form-control" id="uang_kembali" name="uang_kembali" value="{{ $transaksi->uang_kembali }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -107,12 +115,12 @@
     var totalHarga = 0;
     var quantity = 0;
     var listItem = [];
-    
+
     function tambahItem(){
         updateTotalHarga(parseInt($('#id_produk').find(':selected').data('harga')));
         var item = listItem.filter((el) => el.id_produk === $('#id_produk').find(':selected').data('id'));
         if(item.length > 0){
-            item[0].quantity += 1
+            item[0].quantity += 1;
         }else{
             var item = {
                 id_produk: $('#id_produk').find(':selected').data('id'),
@@ -120,10 +128,10 @@
                 harga: $('#id_produk').find(':selected').data('harga'),
                 quantity: 1
             }
-            listItem.push(item)
+            listItem.push(item);
         }
-        updateQuantity(1)
-        updateTable()
+        updateQuantity(1);
+        updateTable();
     }
 
     function updateTable(){
@@ -134,7 +142,7 @@
             <tr>
                 <td>${index + 1}</td>
                 <td>${el.nama}</td>
-                <td><input type="number" name="quantity[]" class="form-control" value="${el.quantity}" onchange="updateItemQuantity(${index}, this.value)" min="1"></td>
+                <td><input type="number" name="quantity[]" class="form-control" value="${el.quantity}" onchange="updateItemQuantity(${index}, this.value)"></td>
                 <td>${harga}</td>
                 <td>
                     <input type="hidden" name="id_produk[]" value="${el.id_produk}">
@@ -143,10 +151,12 @@
                     </button>   
                 </td>
             </tr>
-            `
-        })
-        $('.transaksiItem').html(html)
+            `;
+        });
+        $('.transaksiItem').html(html);
+        updateTotalQuantity(); // Menambah pemanggilan fungsi untuk memperbarui total quantity
     }
+
     function updateItemQuantity(index, newQuantity){
         var item = listItem[index];
         var diffQuantity = newQuantity - item.quantity;
@@ -155,30 +165,37 @@
         updateQuantity(diffQuantity);
         
         listItem[index].quantity = parseInt(newQuantity);
+        updateTotalQuantity(); // Menambah pemanggilan fungsi untuk memperbarui total quantity
     }
+
     function deleteItem(index){
-        var item = listItem[index]
+        var item = listItem[index];
         if(item.quantity > 1){
             listItem[index].quantity -= 1;
-            updateTotalHarga(-(item.harga))
-            updateQuantity(-1)
+            updateTotalHarga(-(item.harga));
+            updateQuantity(-1);
         }else{
-            listItem.splice(index,1)
-            updateTotalHarga(-(item.harga * item.quantity))
-            updateQuantity(-(item.quantity))
+            listItem.splice(index,1);
+            updateTotalHarga(-(item.harga * item.quantity));
+            updateQuantity(-(item.quantity));
         }
-        updateTable()
+        updateTable();
     }
 
     function updateTotalHarga(nom){
         totalHarga += nom;
-        $('[name=total_harga]').val(totalHarga)
-        $('.totalHarga').html(formatRupiah(totalHarga.toString()))
+        $('[name=total_harga]').val(totalHarga);
+        $('.totalHarga').html(formatRupiah(totalHarga.toString()));
     }
 
     function updateQuantity(nom){
         quantity += nom;
-        $('.quantity').html(formatRupiah(quantity.toString()))
+        $('.quantity').html(formatRupiah(quantity.toString()));
+    }
+
+    function updateTotalQuantity() {
+        var totalQuantity = listItem.reduce((acc, curr) => acc + curr.quantity, 0);
+        $('.quantity').html(formatRupiah(totalQuantity.toString()));
     }
 
     function hitungUangKembali() {
@@ -188,20 +205,5 @@
         var uangKembali = uangBayar - totalHarga;
         $('#uang_kembali').val(uangKembali);
     }
-    function hideShowMejaDropdown() {
-        var pilihanMakan = document.getElementById('pilihan_makan');
-        var mejaInput = document.getElementById('meja');
-
-        // Check the selected option and modify the attributes accordingly
-        if (pilihanMakan.value === 'bawa_pulang') {
-            mejaInput.disabled = true;
-            mejaInput.value = ''; // Reset the value when 'bawa_pulang' is selected
-        } else {
-            mejaInput.disabled = false;
-        }
-    }
-
-    // Panggil fungsi hideShowMejaDropdown saat terjadi perubahan pada pilihan_makan
-    document.getElementById('pilihan_makan').addEventListener('change', hideShowMejaDropdown);
 </script>
 @endsection

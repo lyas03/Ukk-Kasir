@@ -169,7 +169,15 @@ return array(
          *
          * @see CPDF_Adapter::PAPER_SIZES for valid sizes ('letter', 'legal', 'A4', etc.)
          */
-        "default_paper_size" => "a4",
+        'paper_size' => [
+            'a3' => ['width' => 297, 'height' => 420, 'unit' => 'mm'],
+            'a4' => ['width' => 210, 'height' => 297, 'unit' => 'mm'],
+            'a5' => ['width' => 148, 'height' => 210, 'unit' => 'mm'],
+            'letter' => ['width' => 216, 'height' => 279, 'unit' => 'mm'],
+            'legal' => ['width' => 216, 'height' => 356, 'unit' => 'mm'],
+            'receipt' => ['width' => 58, 'height' => 100, 'unit' => 'mm'],
+        ],
+        'default_paper_size' => 'receipt',
 
          /**
           * The default paper orientation.

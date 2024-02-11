@@ -122,6 +122,8 @@ class UserC extends Controller
                 'password_new' => 'required',
                 'password_confirm' => 'required|same:password_new',
             ]);
+
+            $user = User::findOrFail($id);
     
             $user->update([
                 'password' => Hash::make($request->password_new),

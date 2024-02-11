@@ -6,9 +6,15 @@
     <div class="container-fluid">
         <h1 class="h3 mt-4 mb-3" style="color: black;">History Transaksi</h1>
         <div class="my-3 d-flex justify-content-start">
-            <a href="{{ route('transaksi.print') }}" class="btn btn-primary" target="_blank">
-                <i class="fas fa-file-pdf"></i> Unduh PDF
-            </a>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-file-pdf"></i> Unduh PDF
+                </button>
+                <div class="dropdown-menu" aria-labelledby="filterDropdown">
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#printByDateModal">Print Berdasarkan Tanggal</a>
+                    <a class="dropdown-item" href="{{ route('transaksi.print') }}" target="_blank">Print Semua Transaksi</a>
+                </div>
+            </div>
         </div>
         <div class="card shadow mb-4">
             <div class="card-body">
@@ -19,9 +25,6 @@
                                 <th>No</th>
                                 <th>Nomor Unik</th>
                                 <th>Nama Pelanggan</th>
-                                <th>Nama Produk</th>
-                                <th>Jumlah</th>
-                                <th>Sub Total</th>
                                 <th>Tanggal</th>
                                 <th>Aksi</th>
                             </tr>
@@ -35,19 +38,30 @@
                                 <td>{{ $counter++ }}</td>
                                 <td>{{ $item->nomor_unik }}</td>
                                 <td>{{ $item->nama_pelanggan }}</td>
-                                <td>{{ $item->id_produk }}</td>
-                                <td>{{ $item->total_item }}</td>
-                                <td>{{ $item->total_harga }}</td>
                                 <td>{{ $item->created_at }}</td>
                                 <td>
-                                    <a href="{{ route('users.edit', $item->id) }}" class="btn btn-success">
+                                @if($userRole === 'admin')
+                                    <a href="{{ route('transaksi.edit', $item->id) }}" class="btn btn-success">
                                         <i class="fa-solid fa-pencil mr-1"></i>Edit
                                     </a>
-                                    <a href="{{ route('users.delete', $item->id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">
+                                    <a href="{{ route('transaksi.delete', $item->id) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus transaksi {{ $item->nama_pelanggan }}?')">
                                         <i class="fas fa-trash-alt mr-1"></i>Hapus
                                     </a>
+                                @endif
+                                @if($userRole === 'kasir')
+                                    <a href="{{ route('struk.print', ['id' => $item->id]) }}" class="btn btn-warning" target="_blank">
+                                        Print Struk
+                                    </a>
+                                @endif
+                                @if(in_array($userRole, ['admin', 'owner']))
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#transactionModal{{ $item->id }}">
+                                        <i class="fa-solid fa-circle-info mr-1"></i> Detail
+                                    </button>
+                                @endif
                                 </td>
                             </tr>
+                            @include('transaksi.detail')
+                            @include('transaksi.print-filter')
                         @endforeach
                         </tbody>
                     </table>

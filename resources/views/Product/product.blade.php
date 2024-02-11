@@ -54,10 +54,10 @@
 
                                 @if($userRole === 'admin')
                                 <td>
-                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-target="#editProdukModal{{ $item->id }}">
+                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id_produk }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-target="#editProdukModal{{ $item->id_produk }}">
                                         <i class="fa-solid fa-pencil mr-2"></i>Edit
                                     </button>
-                                    <a href="{{ route('product.delete', $item->id) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus {{ $item->nama_produk }}?')">
+                                    <a href="{{ route('product.delete', $item->id_produk) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus {{ $item->nama_produk }}?')">
                                         <i class="fas fa-trash-alt mr-2"></i>Hapus
                                     </a>
                                 </td>

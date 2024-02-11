@@ -1,5 +1,5 @@
 
-<div class="modal fade" id="editProdukModal{{ $item->id }}" tabindex="-1" role="dialog" aria-labelledby="editProdukModalLabel{{ $item->id }}" aria-hidden="true">
+<div class="modal fade" id="editProdukModal{{ $item->id_produk }}" tabindex="-1" role="dialog" aria-labelledby="editProdukModalLabel{{ $item->id_produk }}" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -9,11 +9,11 @@
                 </button>
             </div>
             <div class="modal-body">
-            <form method="post" action="{{ route('product.update', ['id' => $item->id]) }}">
+            <form method="post" action="{{ route('product.update', ['id_produk' => $item->id_produk]) }}">
                     @csrf
                     @method('PUT')
                     <!-- Tambahkan input hidden untuk menyimpan ID produk -->
-                    <input type="hidden" name="id" value="{{ $item->id }}">
+                    <input type="hidden" name="id" value="{{ $item->id_produk }}">
                     <div class="mb-3">
                         <label for="edit_nama_produk" class="form-label">Nama Produk</label>
                         <input type="text" class="form-control" id="edit_nama_produk" name="nama_produk" value="{{ $item->nama_produk }}" required>

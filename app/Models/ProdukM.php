@@ -17,11 +17,15 @@ class ProdukM extends Model
 
     public function transactions()
     {
-        return $this->hasMany(TransaksiM::class, 'id_produk');
+        return $this->hasMany(TransaksiM::class, 'id');
     }
     public function kategori()
     {
         return $this->belongsTo(KategoriM::class, 'id_kategori', 'id_kategori');
+    }
+    public function detailTransaksi()
+    {
+        return $this->hasOne(DetailTransaksiM::class, 'id_produk', 'id_produk');
     }
 
 }
