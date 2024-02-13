@@ -13,8 +13,9 @@
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     
-    <title>Big Food | @yield('title')</title>
-
+    <title>Green Eats | @yield('title')</title>
+    
+    <link rel="icon" type="image/png" href="{{ asset('image/logo.png') }}">
     <!-- Mengatur font -->
     <link href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link
@@ -38,16 +39,16 @@
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center">
                 <div class="sidebar-brand-icon">
-                    <i class="fas fa-laugh-wink"></i>
+                    <img src="{{ asset('image/logo.png') }}" alt="Logo">
                 </div>
-                <div class="sidebar-brand-text mx-3">Big Food</div>
+                <div class="sidebar-brand-text mx-2">Green Eats</div>
             </a>
 
             <hr class="sidebar-divider my-0">
             @if(Auth::check())
                 <a class="sidebar-user d-flex flex-column justify-content-center">
                     <div>Hallo, {{ Auth::user()->nama }}</div>
-                    <small>{{ Auth::user()->role }}</small>
+                    <small style="font-size: 0.8rem;">{{ Auth::user()->role }}</small>
                 </a>
             @endif
 
@@ -83,7 +84,7 @@
                     </li>
                     <li class="nav-item {{ request()->is('users', 'edit-user') ? 'active' : '' }}">
                         <a class="nav-link" href="users">
-                            <i class="fas fa-solid fa-user"></i>
+                            <i class="fas fa-solid fa-users"></i>
                             <span>User</span>
                         </a>
                     </li>
@@ -105,7 +106,7 @@
                 @if(in_array($userRole, ['admin', 'kasir']))
                     <li class="nav-item {{ request()->is('product') ? 'active' : '' }}">
                         <a class="nav-link" href="product">
-                            <i class="fas fa-solid fa-boxes-stacked"></i>
+                            <i class="fa-solid fa-utensils"></i>
                             <span>Produk</span>
                         </a>
                     </li>
@@ -144,7 +145,7 @@
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Big Food 2024</span>
+                        <span>Copyright &copy; Green Eats 2024</span>
                     </div>
                 </div>
             </footer>
@@ -165,7 +166,7 @@
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
-    <script src="{{asset ('vendor/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ asset ('vendor/chart.js/Chart.min.js') }}"></script>
     <script src="{{ asset('js/sb-admin-2.min.js') }}"></script>
 
     <script>

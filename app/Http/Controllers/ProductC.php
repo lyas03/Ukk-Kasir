@@ -72,42 +72,54 @@ class ProductC extends Controller
     }
 
     public function update(Request $request, $id)
-{
-    $validatedData = $request->validate([
-        'nama_produk' => 'required',
-        'harga_produk' => 'required',
-        'id_kategori' => 'required|exists:kategori,nama_kategori', // Validasi agar nama_kategori ada di tabel kategori
-        'stok' => 'required',
-    ]);
-
-    try {
-        // Retrieve the product based on the provided $id
-        $product = ProdukM::findOrFail($id);
-
-        // Retrieve kategori based on the provided nama_kategori
-        $kategori = KategoriM::where('nama_kategori', $validatedData['id_kategori'])->first();
-
-        $product->update([
-            'nama_produk' => $validatedData['nama_produk'],
-            'harga_produk' => $validatedData['harga_produk'],
-            'id_kategori' => $kategori->id_kategori, // Gunakan id_kategori dari tabel kategori
-            'stok' => $request->input('stok'), // Sesuaikan sesuai kebutuhan
+    {
+        $validatedData = $request->validate([
+            'nama_produk' => 'required',
+            'harga_produk' => 'required',
+            'id_kategori' => 'required|exists:kategori,nama_kategori', // Validasi agar nama_kategori ada di tabel kategori
+            'stok' => 'required',
         ]);
 
-        // Add log or success message if necessary
+        try {
+            // Retrieve the product based on the provided $id
+            $product = ProdukM::findOrFail($id);
 
-        return redirect()->route('product')->with('success', 'Berhasil Update Data Produk');
-    } catch (Exception $e) {
-        return redirect()->route('product')->with('error', 'Gagal Update Data Produk, Mohon Coba Lagi');
+            $namaProduk = $product->nama_produk;
+
+            // Retrieve kategori based on the provided nama_kategori
+            $kategori = KategoriM::where('nama_kategori', $validatedData['id_kategori'])->first();
+
+            $product->update([
+                'nama_produk' => $validatedData['nama_produk'],
+                'harga_produk' => $validatedData['harga_produk'],
+                'id_kategori' => $kategori->id_kategori,
+                'stok' => $validatedData['stok'],
+            ]);
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin melakukan edit produk $namaProduk",
+            ]);
+
+            return redirect()->route('product')->with('success', 'Berhasil Update Data Produk');
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->route('product')->with('error', 'Gagal Update Data Produk, Mohon Coba Lagi');
+        }
     }
-}
 
 
     public function deleteProduct($id)
     {
         try {
             $product = ProdukM::findOrFail($id);
+            $namaProduk = $product->nama_produk;
             $product->delete();
+            
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin menghapus produk $namaProduk",
+            ]);
 
             return redirect()->route('product')->with('success', 'Berhasil Hapus Data Produk');
         } catch (Exception $e) {

@@ -37,7 +37,13 @@
                                 <td>{{ $counter++ }}</td>
                                 <td>{{ $item->no_meja }}</td>
                                 <td>{{ $item->jumlah_kursi }}</td>
-                                <td>{{ $item->status }}</td>
+                                <td>
+                                    @if($item->status == 'Tersedia')
+                                        <span class="badge badge-success">{{ $item->status }}</span>
+                                    @elseif($item->status == 'Terpakai')
+                                        <span class="badge badge-danger">{{ $item->status }}</span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if($userRole === 'kasir')
                                     <form action="{{ route('meja.change', $item->id) }}" method="POST">
@@ -46,6 +52,8 @@
                                         <button type="submit" class="btn btn-warning">
                                             <i class="fa-solid fa-arrows-rotate"></i> Ubah Status
                                         </button>
+                                        @include('message.success')
+                                        @include('message.error')
                                     </form>
                                     @endif
                                     @if($userRole === 'admin')
@@ -69,10 +77,10 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script>
-        document.getElementById('addDataMejaBtn').addEventListener('click', function() {
+        $('#addDataMejaBtn').on('click', function() {
             $('#tambahMejaModal').modal('show');
         });
         $(document).on('click', '.btn-edit', function () {

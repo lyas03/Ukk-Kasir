@@ -12,9 +12,19 @@
                     </div>
                 </div>
                 <div class="pb-2 pt-1 text-center">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="closeErrorModal">Tutup</button>
                 </div>
             </div>
         </div>
     </div>
 @endif
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+
+        document.getElementById('closeErrorModal').addEventListener('click', function () {
+                errorModal.hide();
+            });
+    });
+</script>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\LogM;
 use App\Models\KategoriM;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -32,6 +33,11 @@ class KategoriC extends Controller
             KategoriM::create([
                 'nama_kategori' => $request->input('kategori'),
             ]);
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => 'Admin menambahkan kategori baru',
+            ]);
     
             // Redirect dengan pesan sukses
             return redirect()->route('kategori')->with('success', 'Kategori berhasil ditambahkan.');
@@ -54,8 +60,14 @@ class KategoriC extends Controller
     
         try {
             $kategori = KategoriM::findOrFail($id_kategori);
+            $namaKategori = $kategori->nama_kategori;
             $kategori->update($validatedData);
-    
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin melakukan edit kategori $namaKategori",
+            ]);
+
             return redirect()->route('kategori')->with('success', 'Berhasil Update Data');
         } catch (Exception $e) {
             return redirect()->route('kategori')->with('error', 'Gagal Update Data, Mohon Coba Lagi');
@@ -65,7 +77,13 @@ class KategoriC extends Controller
     {
         try {
             $kategori = KategoriM::findOrFail($id_kategori);
+            $namaKategori = $kategori->nama_kategori;
             $kategori->delete();
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin menghapus kategori $namaKategori",
+            ]);
 
             return redirect()->route('kategori')->with('success', 'Berhasil Hapus Data');
         } catch (Exception $e) {

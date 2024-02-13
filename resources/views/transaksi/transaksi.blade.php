@@ -5,6 +5,9 @@
 @section('content')
     <div class="container">
         <h2 class="h3 mt-4 mb-3">Tambah Transaksi</h2>
+        @if ($errors->any())
+            @include('message.error', ['errorMessage' => $errors->first('error')])
+        @endif
         <div class="row">
             <div class="col-lg-12">
                 <div class="box">
@@ -35,24 +38,20 @@
                                         <select class="form-control" id="meja" name="meja">
                                             @foreach($meja as $item)
                                                 <option value="" disabled selected hidden></option>
-                                                <option value="{{ $item->no_meja }}">{{ $item->no_meja }} - {{ $item->jumlah_kursi}}</option>
+                                                <option value="{{ $item->no_meja }}">Meja {{ $item->no_meja }} Jumlah Kursi {{ $item->jumlah_kursi}}</option>
                                             @endforeach
                                         </select>
                                     </div>
                             </div>
                             <div class="form-group row mt-5">
-                                <label for="id_produk" class="col-lg-2 col-form-label">Nama Produk</label>
+                                <label for="produk" class="col-lg-2 col-form-label">Nama Produk</label>
                                 <div class="col-lg-8">
-                                    <select class="form-control" id="id_produk">
-                                        @foreach ($products as $product)
-                                            <option value="{{ $product->id_produk }}" data-nama="{{ $product->nama_produk }}" data-harga="{{ $product->harga_produk }}" data-id="{{ $product->id_produk }}">{{ $product->nama_produk }} - Rp.{{ number_format($product->harga_produk) }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input class="form-control" id="produk" name="produk" readonly>
                                 </div>
                                 <div class="col-lg-2">
-                                    <button type="button" class="btn btn-primary d-block" onclick="tambahItem()">Tambah Produk</button>
+                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#produkModal">Pilih Produk</button>
                                 </div>
-                            </div>
+                                </div>
                             <div class="row">
                                     <div class="col-md-12 table-responsive">
                                         <table class="table table-striped table-bordered">
@@ -83,6 +82,7 @@
                                     <label for="uang_bayar" class="col-lg-2 col-form-label">Uang Bayar</label>
                                     <div class="col-lg-4">
                                         <input type="number" class="form-control" id="uang_bayar" name="uang_bayar" oninput="hitungUangKembali()" required>
+                                        <div class="invalid-feedback" id="uang_bayar_error"></div>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -97,33 +97,50 @@
                                         <button class="btn btn-primary">Simpan Transaksi</button>
                                     </div>
                                 </div>
-                        </form>
+                            </form>
                     </div>
+                    @include('transaksi.pilih-produk')
                 </div>
             </div>
         </div>
-</div>
+    </div>
+    @include('message.error')
+
 <script>
     var totalHarga = 0;
     var quantity = 0;
     var listItem = [];
     
-    function tambahItem(){
-        updateTotalHarga(parseInt($('#id_produk').find(':selected').data('harga')));
-        var item = listItem.filter((el) => el.id_produk === $('#id_produk').find(':selected').data('id'));
-        if(item.length > 0){
-            item[0].quantity += 1
-        }else{
-            var item = {
-                id_produk: $('#id_produk').find(':selected').data('id'),
-                nama: $('#id_produk').find(':selected').data('nama'),
-                harga: $('#id_produk').find(':selected').data('harga'),
+    function pilihProduk(namaProduk, idProduk, hargaProduk) {
+        $('#id_produk').val(idProduk);
+        $('#produk').val(namaProduk);
+        $('#harga_produk').val(hargaProduk);
+        $('#produkModal').modal('hide');
+
+        tambahItem(namaProduk);
+    }
+    function tambahItem(namaProduk){
+        var idProduk = $('#id_produk').val();
+        // var namaProduk = $('#produk').val();
+        var hargaProduk = parseFloat($('#harga_produk').val()) || 0;
+
+        updateTotalHarga(hargaProduk);
+        var item = listItem.filter((el) => el.id_produk === idProduk);
+
+        if (item.length > 0) {
+            item[0].quantity += 1;
+        } else {
+            var newItem = {
+                id_produk: idProduk,
+                nama: namaProduk,
+                harga: hargaProduk,
                 quantity: 1
-            }
-            listItem.push(item)
+            };
+            listItem.push(newItem);
         }
-        updateQuantity(1)
-        updateTable()
+
+        updateQuantity(1);
+        updateTable();
     }
 
     function updateTable(){
@@ -138,8 +155,8 @@
                 <td>${harga}</td>
                 <td>
                     <input type="hidden" name="id_produk[]" value="${el.id_produk}">
-                    <button type="button" onclick="deleteItem(${index})" class="btn btn-link">
-                        <i class="fa fa-trash text-danger"></i>    
+                    <button type="button" onclick="deleteItem(${index})" class="btn btn-danger">
+                        <i class="fa fa-trash"></i>    
                     </button>   
                 </td>
             </tr>
@@ -187,6 +204,15 @@
 
         var uangKembali = uangBayar - totalHarga;
         $('#uang_kembali').val(uangKembali);
+
+        // Validation: Check if uang bayar is less than total harga
+        if (uangBayar < totalHarga) {
+            $('#uang_bayar').addClass('is-invalid'); // Add the 'is-invalid' class for red border
+            $('#uang_bayar_error').html('Uang bayar kurang!'); // Display error message
+        } else {
+            $('#uang_bayar').removeClass('is-invalid'); // Remove the 'is-invalid' class
+            $('#uang_bayar_error').html(''); // Clear error message
+        }
     }
     function hideShowMejaDropdown() {
         var pilihanMakan = document.getElementById('pilihan_makan');
@@ -200,8 +226,6 @@
             mejaInput.disabled = false;
         }
     }
-
-    // Panggil fungsi hideShowMejaDropdown saat terjadi perubahan pada pilihan_makan
     document.getElementById('pilihan_makan').addEventListener('change', hideShowMejaDropdown);
 </script>
 @endsection

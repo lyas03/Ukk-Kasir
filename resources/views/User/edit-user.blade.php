@@ -18,7 +18,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit_username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="edit_username" name="username" value="{{ $item->username }}"required>
+                            <input type="text" class="form-control" id="edit_username" name="username" value="{{ $item->username }}"readonly>
                         </div>
                         <div class="mb-3">
                             <label for="edit_role" class="form-label">Role</label>

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Data Transaksi  - Big Foody</title>
+    <title>Laporan Data Transaksi - Green Eats</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             text-align: center;
         }
 
@@ -53,17 +53,17 @@
     </style>
 </head>
 <body>
-    <h3>Big Foody</h3>
+    <h3>Green Eats</h3>
     <h2>Laporan Data Transaksi</h2>
     <table>
         <thead>
             <tr>
                 <th>No</th>
+                <th>Nomor Unik</th>
                 <th>Nama Pelanggan</th>
+                <th>Pilihan Makan</th>
                 <th>Produk</th>
                 <th>Total Harga</th>
-                <th>Uang Bayar</th>
-                <th>Uang Kembali</th>
                 <th>Tanggal</th>
             </tr>
         </thead>
@@ -75,7 +75,9 @@
             @foreach($transaction as $item)
                 <tr>
                     <td>{{ $counter++ }}</td>
+                    <td>{{ $item->nomor_unik }}</td>
                     <td>{{ $item->nama_pelanggan }}</td>
+                    <td>{{ ucwords(str_replace('_', ' ', $item->pilihan_makan)) }}</td>
                     <td>
                         @php
                             $totalHarga = 0;
@@ -85,7 +87,7 @@
                                 @php
                                     $produk = \App\Models\ProdukM::find($transaction->id_produk);
                                 @endphp
-                                   - {{ $produk->nama_produk }} Rp. {{ number_format($produk->harga_produk, 0, ',', '.') }} x {{ $transaction->jumlah }}<br>
+                                {{ $produk->nama_produk }} x {{ $transaction->jumlah }},
                                 @php
                                     $totalHarga = $transaction->total_harga;
                                 @endphp
@@ -93,8 +95,6 @@
                         @endforeach
                     </td>
                     <td>{{ number_format($totalHarga, 0, ',', '.') }}</td>
-                    <td>{{ number_format($item->uang_bayar, 0, ',', '.') }}</td>
-                    <td>{{ number_format($item->uang_kembali, 0, ',', '.') }}</td>
                     <td>{{ $item->created_at }}</td>
                 </tr>
                 @php
@@ -104,8 +104,8 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="3" class="tfoot">Total Pemasukan</td>
-            <td colspan="4" class="tfoot">{{ number_format($totalPemasukan, 0, ',', '.') }}</td>
+            <td colspan="5" class="tfoot">Total Pemasukan</td>
+            <td colspan="2" class="tfoot">{{ number_format($totalPemasukan, 0, ',', '.') }}</td>
         </tr>
     </tfoot>
     </table>

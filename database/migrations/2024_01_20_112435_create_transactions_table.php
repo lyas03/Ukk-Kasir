@@ -15,6 +15,7 @@ return new class extends Migration
             $table->integer('id')->autoIncrement();
             $table->string('nama_pelanggan', 45);
             $table->string('nomor_unik', 10);
+            $table->string('pilihan_makan');
             $table->integer('meja')->nullable();
             $table->integer('uang_bayar');
             $table->integer('uang_kembali');

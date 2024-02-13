@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('transaksi.printByDate') }}" method="GET">
+                <form action="{{ route('transaksi.printByDate') }}" method="GET" target="_blank">
                     <div class="form-group">
                         <label for="start_date">Tanggal Mulai</label>
                         <input type="date" class="form-control" id="start_date" name="start_date" required>

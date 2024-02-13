@@ -18,7 +18,7 @@
                     @foreach($kategories as $kategori)
                         <a class="dropdown-item" href="{{ route('product.print', ['kategori' => $kategori->nama_kategori]) }}" target="_blank">Print Kategori {{ $kategori->nama_kategori }}</a>
                     @endforeach
-                    <a class="dropdown-item" href="{{ route('product.print') }}" target="_blank">Print Semua Kategori</a>
+                    <a class="dropdown-item" href="{{ route('product.print') }}" target="_blank">Print Semua Produk</a>
                 </div>
             </div>
         </div>
@@ -54,7 +54,7 @@
 
                                 @if($userRole === 'admin')
                                 <td>
-                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id_produk }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-target="#editProdukModal{{ $item->id_produk }}">
+                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id_produk }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-stok="{{ $item->stok }}" data-target="#editProdukModal{{ $item->id_produk }}">
                                         <i class="fa-solid fa-pencil mr-2"></i>Edit
                                     </button>
                                     <a href="{{ route('product.delete', $item->id_produk) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus {{ $item->nama_produk }}?')">
@@ -84,12 +84,14 @@
         var id = $(this).data('id');
         var namaProduk = $(this).data('nama');
         var hargaProduk = $(this).data('harga');
+        var stok = $(this).data('stok');
         var modalTarget = $(this).data('target');
 
         // Isi nilai formulir modal
         $(modalTarget).find('input[name="id_produk"]').val(id);
         $(modalTarget).find('#edit_nama_produk').val(namaProduk);
         $(modalTarget).find('#edit_harga_produk').val(hargaProduk);
+        $(modalTarget).find('#edit_stok').val(stok);
 
         // Tampilkan modal
         $(modalTarget).modal('show');

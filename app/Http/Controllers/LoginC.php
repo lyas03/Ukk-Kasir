@@ -21,11 +21,12 @@ class LoginC extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
     
-            // Catat aktivitas login
-            LogM::create([
-                'id_user' => $user->id,
-                'activity' => "{$user->role} Melakukan Login",
-            ]);
+            if ($user->role == 'admin' || $user->role == 'kasir') {
+                LogM::create([
+                    'id_user' => $user->id,
+                    'activity' => "{$user->role} Melakukan Login",
+                ]);
+            }
     
             // Arahkan semua peran ke halaman dashboard
             return redirect('/dashboard');
@@ -45,15 +46,14 @@ class LoginC extends Controller
 
         $request->session()->regenerateToken();
 
-        LogM::create([
-            'id_user' => $user->id,
-            'activity' => "{$user->role} Melakukan Logout",
-        ]);
+        if ($user->role == 'admin' || $user->role == 'kasir') {
+            LogM::create([
+                'id_user' => $user->id,
+                'activity' => "{$user->role} Melakukan Logout",
+            ]);
+        }
 
         return redirect('login');
     }
-    public function showErrorPage()
-    {
-        return view('message.page-eror');
-    }
+    
 }

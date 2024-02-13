@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Daftar Produk - Big Foody</title>
+    <title>Laporan Daftar Produk - Green Eats</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -49,7 +49,7 @@
     </style>
 </head>
 <body>
-    <h3>Big Foody</h3>
+    <h3>Green Eats</h3>
     <h2>Laporan Daftar Product</h2>
     <table>
         <thead>
@@ -58,6 +58,7 @@
                 <th>Nama Produk</th>
                 <th>Kategori</th>
                 <th>Harga Produk</th>
+                <th>Stock</th>
             </tr>
         </thead>
         <tbody>
@@ -70,6 +71,7 @@
                     <td>{{ $produk->nama_produk }}</td>
                     <td>{{ $produk->kategori->nama_kategori }}</td>
                     <td>{{ $produk->harga_produk }}</td>
+                    <td>{{ $produk->stok }}</td>
                 </tr>
             @endforeach
         </tbody>

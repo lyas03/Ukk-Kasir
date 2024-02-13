@@ -45,6 +45,9 @@ class TransaksiC extends Controller
         }
 
         $uang_bayar = $request->input('uang_bayar');
+        if ($uang_bayar < $request->total_harga) {
+            return redirect()->route('transaksi.index')->with('error', 'Uang Bayar Kurang');
+        }
         $uang_kembali = $request->input('uang_kembali');
 
         $transaksi = new TransaksiM();
@@ -60,27 +63,44 @@ class TransaksiC extends Controller
 
         $no_products = 0;
         foreach ($request->get('id_produk') as $id_produk) {
-            $products = ProdukM::findOrFail($id_produk);
+            $product = ProdukM::findOrFail($id_produk);
+
+            // Check if the requested quantity is greater than the available stock
+            if ($request->get('quantity')[$no_products] > $product->stok) {
+                // Handle the case where the requested quantity exceeds the available stock
+                return redirect()->route('transaksi.index')->with('error', 'Stok produk ' . $product->nama_produk . ' tidak mencukupi.');
+            }
+
             $detail_transaksis = new DetailTransaksiM();
             $detail_transaksis->fill([
                 "id_transaction" => $transaksi->id,
                 "id_produk" => $id_produk,
-                "harga_produk" => $products->harga_produk,
-                "jumlah" => $request->get('quantity')[$no_products], // Corrected from 'jumlah' to 'quantity'
+                "harga_produk" => $product->harga_produk,
+                "jumlah" => $request->get('quantity')[$no_products],
                 "total_harga" => $request->get('total_harga')
             ]);
             $detail_transaksis->save();
 
-            $products->stok -= $request->get('quantity')[$no_products];
-            $products->save();
+            // Update product stock
+            $product->stok -= $request->get('quantity')[$no_products];
+
+            // Save the updated product
+            $product->save();
+
             $no_products++;
         }
 
         $newTransaksi = TransaksiM::with('produk')->latest()->first();
 
+        LogM::create([
+            'id_user' => auth()->user()->id,
+            'activity' => "Kasir melakukan transaksi baru",
+        ]);
+
         // Redirect to the selesai route
         return redirect()->route('transaksi.selesai', ['transaksi' => $newTransaksi->id])->with('success', 'Transaksi Berhasil Ditambah');
     } catch (\Exception $e) {
+        dd($e->getMessage());
         // Handle other exceptions here if needed
         return redirect()->route('transaksi.index')->with('error', 'Transaksi Gagal, Mohon coba lagi.');
     }
@@ -101,6 +121,11 @@ class TransaksiC extends Controller
 
         $pdf = PDF::loadView('transaksi.struk', compact('transaksiData'))
                 ->setPaper($struk, 'portrait');
+
+                LogM::create([
+                    'id_user' => auth()->user()->id,
+                    'activity' => "Kasir melakukan print struk",
+                ]);
 
         // Download the PDF or display it in the browser using 'stream'
         return $pdf->stream('struk.pdf');
@@ -161,6 +186,7 @@ class TransaksiC extends Controller
         try {
             // Find the transaction record by id
             $transaction = TransaksiM::findOrFail($id);
+            $namaTransaksi = $transaction->nama_pelanggan;
 
             // Retrieve the related details_transaksis and delete them
             $transaction->detailTransaksis()->delete();
@@ -168,73 +194,14 @@ class TransaksiC extends Controller
             // Delete the transaction record
             $transaction->delete();
 
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin menghapus transaksi $namaTransaksi",
+            ]);
+
             return redirect()->route('history.transaksi')->with('success', 'Berhasil Hapus Data');
         } catch (Exception $e) {
             return redirect()->route('history.transaksi')->with('error', 'Gagal Hapus Data, Mohon Coba Lagi');
         }
     }
-    public function editTransaksi($id)
-    {
-        try {
-            // Mengambil data transaksi berdasarkan ID
-            $transaksi = TransaksiM::findOrFail($id);
-            $transaksiData = TransaksiM::with('detailTransaksis.produk')->findOrFail($id);
-
-            $nomorUnik = $transaksi->nomor_unik;
-            $meja = MejaM::all();
-
-            // Mengambil semua produk untuk dropdown di form
-            $products = ProdukM::with('detailTransaksi')->get();
-
-            // Mengirim data ke view edit
-            return view('transaksi.edit-transaksi', compact('transaksi', 'products','nomorUnik','meja','transaksiData'));
-
-        } catch (Exception $e) {
-            // Menangani jika terjadi kesalahan
-            return redirect()->route('history.transaksi')->with('error', 'Gagal Mengambil Data Transaksi, Mohon Coba Lagi');
-        }
-    }
-    public function update(Request $request, $id)
-    {
-        try {
-            // Validasi request jika diperlukan
-
-            // Mengambil data transaksi berdasarkan ID
-            $transaksi = TransaksiM::findOrFail($id);
-
-            // Mengupdate data transaksi sesuai dengan data yang diterima dari request
-            $transaksi->update([
-                'nomor_unik' => $request->input('nomor_unik'),
-                'nama_pelanggan' => $request->input('nama_pelanggan'),
-                'meja' => $request->input('meja'),
-                'uang_bayar' => $request->input('uang_bayar'),
-                'uang_kembali' => $request->input('uang_kembali'),
-            ]);
-
-            // Menghapus semua detail transaksi yang terkait
-            $transaksi->detailTransaksis()->delete();
-
-            // Menyimpan kembali detail transaksi yang baru
-            $this->saveDetailTransaksi($transaksi, $request->input('id_produk'), $request->input('quantity'));
-
-            return redirect()->route('history.transaksi')->with('success', 'Berhasil Update Data Transaksi');
-
-        } catch (Exception $e) {
-            // Menangani jika terjadi kesalahan
-            return redirect()->route('history.transaksi')->with('error', 'Gagal Update Data Transaksi, Mohon Coba Lagi');
-        }
-    }
-    private function saveDetailTransaksi($transaksi, $produkIds, $quantities)
-    {
-        foreach ($produkIds as $key => $produkId) {
-            // Menyimpan setiap detail transaksi
-            DetailTransaksiM::create([
-                'transaction_id' => $transaksi->id,
-                'produk_id' => $produkId,
-                'quantity' => $quantities[$key],
-            ]);
-        }
-    }
-
-
 }

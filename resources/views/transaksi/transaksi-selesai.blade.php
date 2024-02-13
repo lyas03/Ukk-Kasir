@@ -27,12 +27,14 @@
 
                             <div class="detail-item">
                                 <strong>Produk:</strong>
+                                <ul>
                                 @foreach($transaksiData->detailTransaksis as $detailTransaksi)
                                     @php
                                         $produk = \App\Models\ProdukM::find($detailTransaksi->id_produk);
                                     @endphp
-                                    <div class="ml-5">- {{ $produk->nama_produk }} x {{ $detailTransaksi->jumlah }}</div>
+                                    <li> {{ $produk->nama_produk }} x {{ $detailTransaksi->jumlah }}</li>
                                 @endforeach
+                                </ul>
                             </div>
 
                             <div class="detail-item">

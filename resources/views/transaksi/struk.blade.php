@@ -19,6 +19,7 @@
         p {
             display: block;
             font-size: 7pt;
+            margin: 0;
         }
         table {
             width: 100%;
@@ -31,11 +32,22 @@
 
         .text-center {
             font-size: 7pt;
-        }
-        h2 {
             text-align: center;
-            font-size: 20pt;
-            margin-top: 0;
+            margin: 0;
+        }
+        h3 {
+            text-align: center;
+            font-size: 13pt;
+            margin: 0;
+        }
+        .data {
+            margin-top: 6;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .total {
+            margin: 3px;
         }
 
     </style>
@@ -43,12 +55,17 @@
 <body>
     <div class="wrapper">
         <div class="struk-content">
-            <h2>Big Food</h2>
+                <h3>Green Eats</h3>
+                
             <p class="text-center">======================================</p>
-            <p>Tanggal : {{ date('d-m-Y') }}</p>
-            <p>Jam : {{ date('H:i:s') }}</p>
-            <p>No Unik : {{ $transaksiData->nomor_unik }}</p>
+            <div class="data">
+                <p>No Unik : {{ $transaksiData->nomor_unik }}</p>
+                <p style="float: left;">Tanggal : {{ date('d-m-Y') }}</p>
+                <p style="float: right;">{{ date('H:i:s') }}</p>
+            </div>
+            <p class="text-center">======================================</p>
             <p>Nama Pelanggan : {{ $transaksiData->nama_pelanggan }}</p>
+            <p>Pilihan Makan : {{ ucwords(str_replace('_', ' ', $transaksiData->pilihan_makan)) }}</p>
             <p>No.Meja : {{ $transaksiData->meja }}</p>
             @if(Auth::check())
                 <p>Kasir : {{ Auth::user()->nama }}</p>
@@ -72,7 +89,7 @@
             </table>
             <p class="text-center">-------------------------------------------------------------------</p>
 
-            <table width="100%" style="border: 0;">
+            <table class="total" width="100%" style="border: 0;">
                 <tr>
                     <td class="text-right">Total Harga:</td>
                     <td class="text-right">{{ number_format($detailTransaksi->total_harga) }}</td>
@@ -89,6 +106,7 @@
 
             <p class="text-center">======================================</p>
             <p class="text-center">-- TERIMA KASIH ATAS KUNJUNGAN ANDA --</p>
+            <p class="text-center">Rawalele, Dawuan, Subang</p>
         </div>
     </div>
 

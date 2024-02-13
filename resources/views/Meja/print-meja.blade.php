@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Daftar Meja - Big Foody</title>
+    <title>Laporan Daftar Meja - Green Eats</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -58,7 +58,7 @@
     </style>
 </head>
 <body>
-    <h3>Big Foody</h3>
+    <h3>Green Eats</h3>
     <h2>Laporan Daftar Meja</h2>
     <table>
         <thead>
