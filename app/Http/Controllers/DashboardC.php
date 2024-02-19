@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\MejaM;
 use App\Models\ProdukM;
+use App\Models\KategoriM;
 use App\Models\TransaksiM;
 use Illuminate\Http\Request;
 use App\Models\DetailTransaksiM;
@@ -23,15 +24,13 @@ class DashboardC extends Controller
             $totalProducts = ProdukM::count();
             $totalMeja = MejaM::count();
             $totalUsers = User::count();
+            $totalKategori = KategoriM::count();
             $totalTransaksi = TransaksiM::count();
-            $transaction = TransaksiM::all();
-            $transactions = DetailTransaksiM::with(['transaksi', 'produk'])
-            ->select('id_transaction', 'id_produk', 'jumlah','total_harga')
-            ->orderBy('created_at', 'desc')
-            ->get();
+            $pendapatan = TransaksiM::sum('sub_total');
+            $product = ProdukM::all();
 
             // Pass the userRole variable to the view
-            return view('/content/dashboard', compact('totalProducts','transaction','transactions', 'totalMeja', 'totalUsers', 'userRole','totalTransaksi'));
+            return view('/content/dashboard', compact('totalProducts','pendapatan','product', 'totalMeja', 'totalUsers', 'userRole','totalTransaksi','totalKategori'));
         }
 
         // Redirect to login if the user is not authenticated

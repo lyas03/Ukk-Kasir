@@ -44,7 +44,7 @@ class MejaC extends Controller
                 'activity' => "Admin menambahkan meja baru",
             ]);
 
-            return redirect()->route('meja')->with('success', 'Berhasil Menambahkan Data');
+            return redirect()->route('meja')->with('success', 'Berhasil Menambahkan nomor meja');
         } catch (Exception $e) {
             // Tangkap kesalahan umum
             return redirect()->route('meja')->with('error', 'Gagal Menambahkan Nomor Meja');
@@ -63,6 +63,7 @@ class MejaC extends Controller
     {
         $validatedData = $request->validate([
             'no_meja' => 'required',
+            'jumlah_kursi' => 'required',
             'status' => 'required',
         ]);
     
@@ -76,7 +77,7 @@ class MejaC extends Controller
                 'activity' => "Admin melakukan edit meja $noMeja",
             ]);
     
-            return redirect()->route('meja')->with('success', 'Berhasil Update Data');
+            return redirect()->route('meja')->with('success', "Berhasil Update nomor meja $noMeja");
         } catch (Exception $e) {
             return redirect()->route('meja')->with('error', 'Gagal Update Data, Mohon Coba Lagi');
         }
@@ -93,7 +94,7 @@ class MejaC extends Controller
                 'activity' => "Admin menghapus meja $noMeja",
             ]);
 
-            return redirect()->route('meja')->with('success', 'Berhasil Hapus Data');
+            return redirect()->route('meja')->with('success', "Berhasil Hapus nomor meja $noMeja");
         } catch (Exception $e) {
             return redirect()->route('meja')->with('error', 'Gagal Hapus Data, Mohon Coba Lagi');
         }

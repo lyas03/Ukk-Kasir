@@ -14,7 +14,7 @@ class TransaksiM extends Model
     protected $table = 'transactions';
     protected $appends = ['nomor_unik'];
     protected $fillable = [
-        'nama_pelanggan','nomor_unik','meja','uang_bayar','uang_kembali','pilihan_makan'
+        'nama_pelanggan','nomor_unik','meja','uang_bayar','uang_kembali','pilihan_makan','sub_total'
     ];
     public function produk()
     {

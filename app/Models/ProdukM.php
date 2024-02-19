@@ -13,19 +13,20 @@ class ProdukM extends Model
 
     protected $table = 'products';
     protected $primaryKey = 'id_produk';
-    protected $fillable = ['id_kategori','nama_produk', 'harga_produk','stok'];
+    protected $fillable = ['kategori', 'nama_produk', 'harga_produk', 'status'];
 
     public function transactions()
     {
-        return $this->hasMany(TransaksiM::class, 'id');
+        return $this->hasMany(TransaksiM::class, 'id_produk');
     }
+
     public function kategori()
     {
-        return $this->belongsTo(KategoriM::class, 'id_kategori', 'id_kategori');
+        return $this->belongsTo(KategoriM::class, 'kategori', 'nama_kategori');
     }
+
     public function detailTransaksi()
     {
         return $this->hasOne(DetailTransaksiM::class, 'id_produk', 'id_produk');
     }
-
 }

@@ -6,23 +6,28 @@
     <div class="container-fluid">
         <h1 class="h3 mt-4 mb-3" style="color: black;">Produk</h1>
         @if($userRole === 'admin')
-        <div class="my-3 d-flex justify-content-start">
-            <a class="btn btn-primary mr-3" id="addDataProdukBtn" data-toggle="modal" data-target="#tambahProdukModal">
-                <i class="fas fa-plus"></i> Tambah Produk
-            </a>
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-file-pdf"></i> Unduh PDF
-                </button>
-                <div class="dropdown-menu" aria-labelledby="filterDropdown">
-                    @foreach($kategories as $kategori)
-                        <a class="dropdown-item" href="{{ route('product.print', ['kategori' => $kategori->nama_kategori]) }}" target="_blank">Print Kategori {{ $kategori->nama_kategori }}</a>
-                    @endforeach
-                    <a class="dropdown-item" href="{{ route('product.print') }}" target="_blank">Print Semua Produk</a>
-                </div>
+    <div class="my-3 d-flex justify-content-start">
+        <a class="btn btn-primary mr-3" id="addDataProdukBtn" data-toggle="modal" data-target="#tambahProdukModal">
+            <i class="fas fa-plus"></i> Tambah Produk
+        </a>
+    </div>
+@endif
+
+@if($userRole === 'owner')
+    <div class="my-3 d-flex justify-content-start">
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-file-pdf"></i> Unduh PDF
+            </button>
+            <div class="dropdown-menu" aria-labelledby="filterDropdown">
+                @foreach($kategories as $kategori)
+                    <a class="dropdown-item" href="{{ route('product.print', ['kategori' => $kategori->nama_kategori]) }}" target="_blank">Print Kategori {{ $kategori->nama_kategori }}</a>
+                @endforeach
+                <a class="dropdown-item" href="{{ route('product.print') }}" target="_blank">Print Semua Produk</a>
             </div>
         </div>
-        @endif
+    </div>
+@endif
 
         <div class="card shadow mb-4">
             <div class="card-body">
@@ -34,7 +39,7 @@
                                 <th>Nama Produk</th>
                                 <th>Kategori</th>
                                 <th>Harga Produk</th>
-                                <th>Stok</th>
+                                <th>Status</th>
                                 @if($userRole === 'admin')
                                     <th>Aksi</th>
                                 @endif
@@ -48,13 +53,19 @@
                             <tr>
                                 <td>{{ $counter++ }}</td>
                                 <td>{{ $item->nama_produk }}</td>
-                                <td>{{ ucfirst($item->kategori->nama_kategori) }}</td>
-                                <td>{{ $item->harga_produk }}</td>
-                                <td>{{ $item->stok }}</td>
-
+                                <td>{{ $item->kategori }}</td>
+                                <td>{{ number_format($item->harga_produk, 0, ',', '.') }}</td>
+                                <td>
+                                    @if($item->status == 'Tersedia')
+                                        <span class="badge badge-success">{{ $item->status }}</span>
+                                    @elseif($item->status == 'Habis')
+                                        <span class="badge badge-danger">{{ $item->status }}</span>
+                                    @endif
+                                </td>
+                                
                                 @if($userRole === 'admin')
                                 <td>
-                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id_produk }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-stok="{{ $item->stok }}" data-target="#editProdukModal{{ $item->id_produk }}">
+                                    <button class="btn btn-success mr-2 btn-edit" data-id="{{ $item->id_produk }}" data-nama="{{ $item->nama_produk }}" data-harga="{{ $item->harga_produk }}" data-status="{{ $item->status }}" data-target="#editProdukModal{{ $item->id_produk }}">
                                         <i class="fa-solid fa-pencil mr-2"></i>Edit
                                     </button>
                                     <a href="{{ route('product.delete', $item->id_produk) }}" class="btn btn-danger" onclick="return confirm('Apakah anda yakin menghapus {{ $item->nama_produk }}?')">
@@ -76,6 +87,7 @@
     </div>
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    @if($userRole === 'admin')
     <script>
         document.getElementById('addDataProdukBtn').addEventListener('click', function() {
             $('#tambahProdukModal').modal('show');
@@ -84,14 +96,14 @@
         var id = $(this).data('id');
         var namaProduk = $(this).data('nama');
         var hargaProduk = $(this).data('harga');
-        var stok = $(this).data('stok');
+        var status = $(this).data('status');
         var modalTarget = $(this).data('target');
 
         // Isi nilai formulir modal
         $(modalTarget).find('input[name="id_produk"]').val(id);
         $(modalTarget).find('#edit_nama_produk').val(namaProduk);
         $(modalTarget).find('#edit_harga_produk').val(hargaProduk);
-        $(modalTarget).find('#edit_stok').val(stok);
+        $(modalTarget).find('#edit_status').val(status);
 
         // Tampilkan modal
         $(modalTarget).modal('show');
@@ -119,4 +131,12 @@
         });
         
     </script>
+    @endif
+    @if($userRole === 'owner')
+    <script>
+        $(document).ready(function(){
+            $('.dropdown-toggle').dropdown();
+        });
+    </script>
+    @endif
 @endsection

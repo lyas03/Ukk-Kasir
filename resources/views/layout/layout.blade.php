@@ -48,7 +48,7 @@
             @if(Auth::check())
                 <a class="sidebar-user d-flex flex-column justify-content-center">
                     <div>Hallo, {{ Auth::user()->nama }}</div>
-                    <small style="font-size: 0.8rem;">{{ Auth::user()->role }}</small>
+                    <small>{{ Auth::user()->role }}</small>
                 </a>
             @endif
 
@@ -61,59 +61,97 @@
                 @php
                     $userRole = Auth::user()->role;
                 @endphp
-                @if(in_array($userRole, ['admin', 'kasir','owner']))
+                @if($userRole == 'admin')
                     <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
-                        <a class="nav-link" href="dashboard">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
                             <i class="fas fa-solid fa-house-user"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item {{ request()->is('history-transaksi') ? 'active' : '' }}">
-                        <a class="nav-link" href="history-transaksi">
-                            <i class="fas fa-solid fa-clock-rotate-left"></i>
-                            <span>History Transaksi</span>
-                        </a>
-                    </li>
-                @endif
-                @if($userRole == 'admin')
                     <li class="nav-item {{ request()->is('kategori') ? 'active' : '' }}">
-                        <a class="nav-link" href="kategori">
+                        <a class="nav-link" href="{{ route('kategori') }}">
                             <i class="fas fa-solid fa-list-ul"></i>
                             <span>Kategori</span>
                         </a>
                     </li>
-                    <li class="nav-item {{ request()->is('users', 'edit-user') ? 'active' : '' }}">
-                        <a class="nav-link" href="users">
-                            <i class="fas fa-solid fa-users"></i>
-                            <span>User</span>
-                        </a>
-                    </li>
-                @elseif($userRole == 'kasir')
-                    <li class="nav-item {{ request()->is('transaksi') ? 'active' : '' }}">
-                        <a class="nav-link" href="transaksi">
-                            <i class="fas fa-solid fa-cash-register"></i>
-                            <span>Transaksi</span>
-                        </a>
-                    </li>
-                @elseif($userRole == 'owner')
-                    <li class="nav-item {{ request()->is('log', 'search/log') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('log') }}">
-                            <i class="fas fa-solid fa-clipboard-list"></i>
-                            <span>Log</span>
-                        </a>
-                    </li>
-                @endif
-                @if(in_array($userRole, ['admin', 'kasir']))
                     <li class="nav-item {{ request()->is('product') ? 'active' : '' }}">
-                        <a class="nav-link" href="product">
+                        <a class="nav-link" href="{{ route('product') }}">
                             <i class="fa-solid fa-utensils"></i>
                             <span>Produk</span>
                         </a>
                     </li>
                     <li class="nav-item {{ request()->is('meja') ? 'active' : '' }}">
-                        <a class="nav-link" href="meja">
+                        <a class="nav-link" href="{{ route('meja') }}">
                             <i class="fas fa-solid fa-chair"></i>
                             <span>Meja</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('users') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('users') }}">
+                            <i class="fas fa-solid fa-users"></i>
+                            <span>User</span>
+                        </a>
+                    </li>
+                @elseif($userRole == 'kasir')
+                    <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
+                            <i class="fas fa-solid fa-house-user"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('product') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('product') }}">
+                            <i class="fa-solid fa-utensils"></i>
+                            <span>Produk</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('meja') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('meja') }}">
+                            <i class="fas fa-solid fa-chair"></i>
+                            <span>Meja</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('transaksi*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('transaksi.index') }}">
+                            <i class="fas fa-solid fa-cash-register"></i>
+                            <span>Transaksi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('history-transaksi') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('history.transaksi') }}">
+                            <i class="fas fa-solid fa-clock-rotate-left"></i>
+                            <span>History Transaksi</span>
+                        </a>
+                    </li>
+                @elseif($userRole == 'owner')
+                    <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
+                            <i class="fas fa-solid fa-house-user"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('product') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('product') }}">
+                            <i class="fa-solid fa-utensils"></i>
+                            <span>Produk</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('meja') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('meja') }}">
+                            <i class="fas fa-solid fa-chair"></i>
+                            <span>Meja</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('history-transaksi') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('history.transaksi') }}">
+                            <i class="fas fa-solid fa-clock-rotate-left"></i>
+                            <span>History Transaksi</span>
+                        </a>
+                    </li>
+                    <li class="nav-item {{ request()->is('log', 'search/log') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('log') }}">
+                            <i class="fas fa-solid fa-clipboard-list"></i>
+                            <span>Log</span>
                         </a>
                     </li>
                 @endif
@@ -124,7 +162,7 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0 mt-2 mb-2">
             <li class="nav-item">
-                <a class="nav-link" href="logout">
+                <a class="nav-link" href="{{ route('logout') }}">
                     <i class="fas fa-solid fa-right-from-bracket"></i>
                     <span>Log out</span></a>
             </li>

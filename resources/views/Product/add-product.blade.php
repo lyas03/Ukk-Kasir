@@ -16,7 +16,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="id_kategori" class="form-label">Kategori</label>
-                            <select class="form-control" id="id_kategori" name="id_kategori" required>
+                            <select class="form-control" id="id_kategori" name="kategori" required>
                                 <option value="" selected disabled>Pilih Kategori</option>
                                 @foreach($kategoris as $kategori)
                                     <option value="{{ $kategori }}">{{ ucfirst($kategori) }}</option>
@@ -26,10 +26,6 @@
                         <div class="mb-3">
                             <label for="harga_produk" class="form-label">Harga Produk</label>
                             <input type="number" class="form-control" id="harga_produk" name="harga_produk" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stok" class="form-label">Stok</label>
-                            <input type="number" class="form-control" id="stok" name="stok" required>
                         </div>
                     
                         <button type="submit" class="btn btn-primary mt-2">Tambah Produk</button>

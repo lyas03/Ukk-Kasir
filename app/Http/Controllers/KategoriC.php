@@ -68,9 +68,9 @@ class KategoriC extends Controller
                 'activity' => "Admin melakukan edit kategori $namaKategori",
             ]);
 
-            return redirect()->route('kategori')->with('success', 'Berhasil Update Data');
+            return redirect()->route('kategori')->with('success', "Berhasil Update Kategori $namaKategori");
         } catch (Exception $e) {
-            return redirect()->route('kategori')->with('error', 'Gagal Update Data, Mohon Coba Lagi');
+            return redirect()->route('kategori')->with('error', 'Gagal Update Kategori, Mohon Coba Lagi');
         }
     }
     public function deleteKategori($id_kategori)
@@ -85,9 +85,9 @@ class KategoriC extends Controller
                 'activity' => "Admin menghapus kategori $namaKategori",
             ]);
 
-            return redirect()->route('kategori')->with('success', 'Berhasil Hapus Data');
+            return redirect()->route('kategori')->with('success', "Berhasil Hapus Kategori $namaKategori");
         } catch (Exception $e) {
-            return redirect()->route('kategori')->with('error', 'Gagal Hapus Data, Mohon Coba Lagi');
+            return redirect()->route('kategori')->with('error', 'Gagal Hapus Kategori, Mohon Coba Lagi');
         }
     }
 }

@@ -58,7 +58,7 @@
                 <th>Nama Produk</th>
                 <th>Kategori</th>
                 <th>Harga Produk</th>
-                <th>Stock</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
@@ -69,9 +69,9 @@
                 <tr>
                     <td>{{ $counter++ }}</td>
                     <td>{{ $produk->nama_produk }}</td>
-                    <td>{{ $produk->kategori->nama_kategori }}</td>
-                    <td>{{ $produk->harga_produk }}</td>
-                    <td>{{ $produk->stok }}</td>
+                    <td>{{ $produk->kategori }}</td>
+                    <td>{{ number_format($produk->harga_produk, 0, ',', '.') }}</td>
+                    <td>{{ $produk->status }}</td>
                 </tr>
             @endforeach
         </tbody>

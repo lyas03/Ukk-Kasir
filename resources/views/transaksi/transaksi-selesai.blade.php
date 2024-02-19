@@ -38,8 +38,8 @@
                             </div>
 
                             <div class="detail-item">
-                                <strong>Total Harga:</strong>
-                                    Rp {{ number_format($detailTransaksi->total_harga, 0, ',', '.') }}, 
+                                <strong>Sub Total:</strong>
+                                    Rp {{ number_format($transaksiData->sub_total, 0, ',', '.') }}, 
                             </div>
 
                             <div class="detail-item">

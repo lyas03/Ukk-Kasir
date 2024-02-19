@@ -10,6 +10,10 @@
             <a class="btn btn-primary mr-3" id="addDataMejaBtn" data-toggle="modal" data-target="#tambahMejaModal">
                 <i class="fas fa-plus"></i> Tambah No Meja
             </a>
+        </div>
+        @endif
+        @if($userRole === 'owner')
+        <div class="my-3 d-flex justify-content-start">
             <a href="{{ route('meja.print') }}" class="btn btn-primary" target="_blank">
                 <i class="fas fa-file-pdf"></i> Unduh PDF
             </a>
@@ -25,7 +29,9 @@
                                 <th>No Meja</th>
                                 <th>Jumlah Kursi</th>
                                 <th>Status</th>
+                                @if(in_array($userRole, ['admin', 'kasir']))
                                 <th>Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -44,6 +50,7 @@
                                         <span class="badge badge-danger">{{ $item->status }}</span>
                                     @endif
                                 </td>
+                                @if(in_array($userRole, ['admin', 'kasir']))
                                 <td>
                                     @if($userRole === 'kasir')
                                     <form action="{{ route('meja.change', $item->id) }}" method="POST">
@@ -65,6 +72,7 @@
                                     </a>
                                     @endif
                                 </td>
+                                @endif
                             </tr>
                             @include('Meja.edit-meja', ['item' => $item])
                         @endforeach

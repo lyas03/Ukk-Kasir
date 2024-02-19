@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use PDF;
 use Exception;
+use App\Models\LogM;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,8 +18,9 @@ class UserC extends Controller
         $users = User::all();
         $user = new User();
         $roles = $user->getEnumRoles();
+        $userRole = auth()->user()->role;
 
-        return view('User.user', compact('users', 'roles'));
+        return view('User.user', compact('users', 'roles','userRole'));
     }
     public function addUserForm()
     {
@@ -48,6 +50,11 @@ class UserC extends Controller
                 'username' => $request->input('username'),
                 'password' => bcrypt($request->input('password')),
                 'role' => $request->input('role'),
+            ]);
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin menambahkan user baru",
             ]);
 
             return redirect()->route('users')->with('success', 'Berhasil Menambahkan User');
@@ -84,7 +91,13 @@ class UserC extends Controller
             ]);
 
             $user = User::findOrFail($id);
+            $namaUser = $user->nama;
             $user->update($validatedData);
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin melakukan edit user $namaUser",
+            ]);
 
             return redirect()->route('users')->with('success', 'Berhasil Update User');
         } catch (ValidationException $e) {
@@ -99,9 +112,15 @@ class UserC extends Controller
     {
         try {
             $user = User::findOrFail($id);
+            $namaUser = $user->nama;
             $user->delete();
 
-            return redirect()->route('users')->with('success', 'Berhasil Hapus User');
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin melakukan hapus user $namaUser",
+            ]);
+
+            return redirect()->route('users')->with('success', "Berhasil Hapus User $namaUser");
         } catch (\Exception $e) {
             return redirect()->route('users')->with('error', 'Gagal Hapus User, Mohon Coba Lagi');
         }
@@ -124,12 +143,18 @@ class UserC extends Controller
             ]);
 
             $user = User::findOrFail($id);
+            $namaUser = $user->nama;
     
             $user->update([
                 'password' => Hash::make($request->password_new),
             ]);
+
+            LogM::create([
+                'id_user' => auth()->user()->id,
+                'activity' => "Admin memperbarui password user $namaUser",
+            ]);
     
-            return redirect()->route('users')->with('success', 'Password Berhasil Diperbaharui!');
+            return redirect()->route('users')->with('success', "Password $namaUser Berhasil Diperbaharui!");
         } catch (\Exception $e) {
             // Tangani kesalahan lainnya di sini
             return redirect()->route('users')->with('error', 'Password baru dan password confirm tidak sama');

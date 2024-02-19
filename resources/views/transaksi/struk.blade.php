@@ -13,7 +13,6 @@
         }
         .wrapper {
             max-width: 100%;
-            position: absolute;
             top: 0;
         }
         p {
@@ -57,20 +56,20 @@
         <div class="struk-content">
                 <h3>Green Eats</h3>
                 
-            <p class="text-center">======================================</p>
+            <p class="text-center">============================</p>
             <div class="data">
                 <p>No Unik : {{ $transaksiData->nomor_unik }}</p>
                 <p style="float: left;">Tanggal : {{ date('d-m-Y') }}</p>
                 <p style="float: right;">{{ date('H:i:s') }}</p>
             </div>
-            <p class="text-center">======================================</p>
+            <p class="text-center">============================</p>
             <p>Nama Pelanggan : {{ $transaksiData->nama_pelanggan }}</p>
-            <p>Pilihan Makan : {{ ucwords(str_replace('_', ' ', $transaksiData->pilihan_makan)) }}</p>
+            <p>Type : {{ ucwords(str_replace('_', ' ', $transaksiData->pilihan_makan)) }}</p>
             <p>No.Meja : {{ $transaksiData->meja }}</p>
             @if(Auth::check())
                 <p>Kasir : {{ Auth::user()->nama }}</p>
             @endif
-            <p class="text-center">======================================</p>
+            <p class="text-center">============================</p>
 
             <table width="100%" style="border: 0;">
                 @foreach($transaksiData->detailTransaksis as $detailTransaksi)
@@ -87,12 +86,12 @@
                     </tr>
                 @endforeach
             </table>
-            <p class="text-center">-------------------------------------------------------------------</p>
+            <p class="text-center">------------------------------------------------</p>
 
             <table class="total" width="100%" style="border: 0;">
                 <tr>
-                    <td class="text-right">Total Harga:</td>
-                    <td class="text-right">{{ number_format($detailTransaksi->total_harga) }}</td>
+                    <td class="text-right">Sub Harga:</td>
+                    <td class="text-right">{{ number_format($transaksiData->sub_total) }}</td>
                 </tr>
                 <tr>
                     <td class="text-right">Uang Bayar:</td>
@@ -104,8 +103,8 @@
                 </tr>
             </table>
 
-            <p class="text-center">======================================</p>
-            <p class="text-center">-- TERIMA KASIH ATAS KUNJUNGAN ANDA --</p>
+            <p class="text-center">============================</p>
+            <p class="text-center">-- Transaksi Berhasil --</p>
             <p class="text-center">Rawalele, Dawuan, Subang</p>
         </div>
     </div>

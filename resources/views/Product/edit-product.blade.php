@@ -20,10 +20,10 @@
                     </div>
                     <div class="mb-3">
                         <label for="edit_id_kategori" class="form-label">Kategori</label>
-                        <select class="form-control" id="edit_id_kategori" name="id_kategori" required>
+                        <select class="form-control" id="edit_id_kategori" name="kategori" required>
                             <option value="" selected disabled></option>
                             @foreach($kategoris as $kategori)
-                                <option value="{{ $kategori }}" {{ $item->kategori->nama_kategori == $kategori ? 'selected' : '' }}>
+                                <option value="{{ $kategori }}" {{ $item->kategori == $kategori ? 'selected' : '' }}>
                                     {{ ucfirst($kategori) }}
                                 </option>
                             @endforeach
@@ -34,8 +34,11 @@
                         <input type="number" class="form-control" id="edit_harga_produk" name="harga_produk" value="{{ $item->harga_produk }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_stok" class="form-label">Stok</label>
-                        <input type="number" class="form-control" id="edit_stok" name="stok" value="{{ $item->stok }}" required>
+                        <label for="edit_status" class="form-label">Status</label>
+                        <select class="form-control" id="edit_status" name="status" required>
+                            <option value="Tersedia" {{ $item->status == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                            <option value="Habis" {{ $item->status == 'Habis' ? 'selected' : '' }}>Habis</option>
+                        </select>
                     </div>
 
                     <button type="submit" class="btn btn-primary mt-2">Edit Produk</button>

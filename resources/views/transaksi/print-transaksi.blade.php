@@ -63,7 +63,7 @@
                 <th>Nama Pelanggan</th>
                 <th>Pilihan Makan</th>
                 <th>Produk</th>
-                <th>Total Harga</th>
+                <th>Sub Total</th>
                 <th>Tanggal</th>
             </tr>
         </thead>
@@ -79,26 +79,20 @@
                     <td>{{ $item->nama_pelanggan }}</td>
                     <td>{{ ucwords(str_replace('_', ' ', $item->pilihan_makan)) }}</td>
                     <td>
-                        @php
-                            $totalHarga = 0;
-                        @endphp
                         @foreach($transactions as $transaction)
                             @if($transaction->id_transaction == $item->id)
                                 @php
                                     $produk = \App\Models\ProdukM::find($transaction->id_produk);
                                 @endphp
                                 {{ $produk->nama_produk }} x {{ $transaction->jumlah }},
-                                @php
-                                    $totalHarga = $transaction->total_harga;
-                                @endphp
                             @endif
                         @endforeach
                     </td>
-                    <td>{{ number_format($totalHarga, 0, ',', '.') }}</td>
-                    <td>{{ $item->created_at }}</td>
+                    <td>{{ number_format($item->sub_total, 0, ',', '.') }}</td>
+                    <td>{{ date('d-m-Y H:i:s', strtotime($item->created_at)) }}</td>
                 </tr>
                 @php
-                $totalPemasukan += $totalHarga; // Add sub_total to totalPemasukan
+                $totalPemasukan += $item->sub_total; // Add sub_total to totalPemasukan
                 @endphp
             @endforeach
         </tbody>

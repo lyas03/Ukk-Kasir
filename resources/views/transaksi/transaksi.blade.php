@@ -38,7 +38,7 @@
                                         <select class="form-control" id="meja" name="meja">
                                             @foreach($meja as $item)
                                                 <option value="" disabled selected hidden></option>
-                                                <option value="{{ $item->no_meja }}">Meja {{ $item->no_meja }} Jumlah Kursi {{ $item->jumlah_kursi}}</option>
+                                                <option value="{{ $item->no_meja }}">Meja {{ $item->no_meja }} - Kursi {{ $item->jumlah_kursi}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -69,9 +69,9 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <th colspan="2">Jumlah</th>
-                                                    <th class="quantity" style="width:150px;">0</th>
-                                                    <th class="totalHarga">0</th>
+                                                    <th colspan="2" style="text-align: left;">Jumlah</th>
+                                                    <th class="quantity" style="width:150px; text-align: left;">0</th>
+                                                    <th class="subTotal">0</th>
                                                     <th></th>
                                                 </tr>
                                             </tfoot>
@@ -94,6 +94,7 @@
                                 <div class="row mt-3">
                                     <div class="col-md-12">
                                         <input type="hidden" name="total_harga" value="0">
+                                        <input type="hidden" name="sub_total" value="0">
                                         <button class="btn btn-primary">Simpan Transaksi</button>
                                     </div>
                                 </div>
@@ -107,7 +108,7 @@
     @include('message.error')
 
 <script>
-    var totalHarga = 0;
+    var subTotal = 0;
     var quantity = 0;
     var listItem = [];
     
@@ -124,7 +125,7 @@
         // var namaProduk = $('#produk').val();
         var hargaProduk = parseFloat($('#harga_produk').val()) || 0;
 
-        updateTotalHarga(hargaProduk);
+        updatesubTotal(hargaProduk);
         var item = listItem.filter((el) => el.id_produk === idProduk);
 
         if (item.length > 0) {
@@ -152,7 +153,7 @@
                 <td>${index + 1}</td>
                 <td>${el.nama}</td>
                 <td><input type="number" name="quantity[]" class="form-control" value="${el.quantity}" onchange="updateItemQuantity(${index}, this.value)" min="1"></td>
-                <td>${harga}</td>
+                <td class="totalHarga">${harga}</td>
                 <td>
                     <input type="hidden" name="id_produk[]" value="${el.id_produk}">
                     <button type="button" onclick="deleteItem(${index})" class="btn btn-danger">
@@ -168,7 +169,7 @@
         var item = listItem[index];
         var diffQuantity = newQuantity - item.quantity;
         
-        updateTotalHarga(diffQuantity * item.harga);
+        updatesubTotal(diffQuantity * item.harga);
         updateQuantity(diffQuantity);
         
         listItem[index].quantity = parseInt(newQuantity);
@@ -177,20 +178,20 @@
         var item = listItem[index]
         if(item.quantity > 1){
             listItem[index].quantity -= 1;
-            updateTotalHarga(-(item.harga))
+            updatesubTotal(-(item.harga))
             updateQuantity(-1)
         }else{
             listItem.splice(index,1)
-            updateTotalHarga(-(item.harga * item.quantity))
+            updatesubTotal(-(item.harga * item.quantity))
             updateQuantity(-(item.quantity))
         }
         updateTable()
     }
 
-    function updateTotalHarga(nom){
-        totalHarga += nom;
-        $('[name=total_harga]').val(totalHarga)
-        $('.totalHarga').html(formatRupiah(totalHarga.toString()))
+    function updatesubTotal(nom){
+        subTotal += nom;
+        $('[name=sub_total]').val(subTotal)
+        $('.subTotal').html(formatRupiah(subTotal.toString()))
     }
 
     function updateQuantity(nom){
@@ -200,13 +201,13 @@
 
     function hitungUangKembali() {
         var uangBayar = parseFloat($('#uang_bayar').val()) || 0;
-        var totalHarga = parseFloat($('[name=total_harga]').val()) || 0;
+        var subTotal = parseFloat($('[name=sub_total]').val()) || 0;
 
-        var uangKembali = uangBayar - totalHarga;
+        var uangKembali = uangBayar - subTotal;
         $('#uang_kembali').val(uangKembali);
 
         // Validation: Check if uang bayar is less than total harga
-        if (uangBayar < totalHarga) {
+        if (uangBayar < subTotal) {
             $('#uang_bayar').addClass('is-invalid'); // Add the 'is-invalid' class for red border
             $('#uang_bayar_error').html('Uang bayar kurang!'); // Display error message
         } else {

@@ -16,28 +16,22 @@
                 <!-- Display product details -->
                 <p><strong>Daftar Produk</strong></p>
                 <ul>
-                    @php
-                        $totalHarga = 0;
-                    @endphp
-                    @foreach($transactions as $transaction)
-                        @if($transaction->id_transaction == $item->id)
-                            @php
-                                $detailTransaksi = \App\Models\DetailTransaksiM::where('id_transaction', $item->id)->where('id_produk', $transaction->id_produk)->first();
-                                $produk = \App\Models\ProdukM::find($transaction->id_produk);
-                            @endphp
-                            <li>{{ $produk->nama_produk }} - {{ number_format($produk->harga_produk, 0, ',', '.')}} x {{ $transaction->jumlah }}</li>
-                            @php
-                                $totalHarga = $detailTransaksi->total_harga;
-                            @endphp
-                        @endif
-                    @endforeach
+                @foreach($transactions as $transaction)
+    @if($transaction->id_transaction == $item->id)
+        @php
+            $detailTransaksi = \App\Models\DetailTransaksiM::where('id_transaction', $item->id)->where('id_produk', $transaction->id_produk)->first();
+            $productName = $detailTransaksi->produk->nama_produk;
+        @endphp
+        <li>{{ $productName }} - {{ number_format($detailTransaksi->harga_produk, 0, ',', '.')}} x {{ $transaction->jumlah }}</li>
+    @endif
+@endforeach
                 </ul>
-                <p><strong>Total Harga:</strong> Rp {{ number_format($totalHarga, 0, ',', '.') }}</p>
+                <p><strong>Sub Total:</strong> Rp {{ number_format($item->sub_total, 0, ',', '.') }}</p>
                 <p><strong>Uang Bayar:</strong> Rp {{ number_format($item->uang_bayar, 0, ',', '.') }}</p>
                 <p><strong>Uang Kembali:</strong> Rp {{ number_format($item->uang_kembali, 0, ',', '.') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>

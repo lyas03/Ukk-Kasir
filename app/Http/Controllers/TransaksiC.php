@@ -17,7 +17,7 @@ class TransaksiC extends Controller
 {
     public function index()
     {   
-        $products = ProdukM::where('stok', '>', 0)->get();
+        $products = ProdukM::where('status', 'Tersedia')->get();
         $randomNumber = mt_rand(1000000000, 9999999999);
         $meja = MejaM::where('status', 'Tersedia')->get();
 
@@ -30,11 +30,13 @@ class TransaksiC extends Controller
         $nama_pelanggan = $request->input('nama_pelanggan');
         $pilihan_makan = $request->input('pilihan_makan');
         $meja = $request->input('meja');
-
+        if ($pilihan_makan === 'makan_di_tempat' && !$meja) {
+            return redirect()->route('transaksi.index')->with('error', 'No Meja harus dipilih untuk Makan di Tempat.');
+        }
         if ($meja) {
             // Cek apakah rekaman MejaM dengan no_meja yang diberikan ada sebelum mengubah status
             $mejaObj = MejaM::where('no_meja', $meja)->first();
-        
+            
             if ($mejaObj) {
                 $mejaObj->status = 'Terpakai';
                 $mejaObj->save();
@@ -43,9 +45,9 @@ class TransaksiC extends Controller
                 return redirect()->route('transaksi.index')->with('error', 'Tidak ada rekaman MejaM yang sesuai ditemukan.');
             }
         }
-
+        $sub_total = $request->input('sub_total');
         $uang_bayar = $request->input('uang_bayar');
-        if ($uang_bayar < $request->total_harga) {
+        if ($uang_bayar < $sub_total) {
             return redirect()->route('transaksi.index')->with('error', 'Uang Bayar Kurang');
         }
         $uang_kembali = $request->input('uang_kembali');
@@ -56,38 +58,23 @@ class TransaksiC extends Controller
             'nama_pelanggan' => $nama_pelanggan,
             'pilihan_makan' => $pilihan_makan,
             'meja' => $meja,
+            'sub_total' => $sub_total,
             'uang_bayar' => $uang_bayar,
             'uang_kembali' => $uang_kembali
         ]);
         $transaksi->save();
 
-        $no_products = 0;
-        foreach ($request->get('id_produk') as $id_produk) {
+        foreach ($request->get('id_produk') as $index => $id_produk) {
             $product = ProdukM::findOrFail($id_produk);
-
-            // Check if the requested quantity is greater than the available stock
-            if ($request->get('quantity')[$no_products] > $product->stok) {
-                // Handle the case where the requested quantity exceeds the available stock
-                return redirect()->route('transaksi.index')->with('error', 'Stok produk ' . $product->nama_produk . ' tidak mencukupi.');
-            }
-
             $detail_transaksis = new DetailTransaksiM();
             $detail_transaksis->fill([
                 "id_transaction" => $transaksi->id,
                 "id_produk" => $id_produk,
                 "harga_produk" => $product->harga_produk,
-                "jumlah" => $request->get('quantity')[$no_products],
-                "total_harga" => $request->get('total_harga')
+                "jumlah" => $request->get('quantity')[$index], // Use $index to access the corresponding quantity
+                "total_harga" => $product->harga_produk * $request->get('quantity')[$index] // Use $index here as well
             ]);
             $detail_transaksis->save();
-
-            // Update product stock
-            $product->stok -= $request->get('quantity')[$no_products];
-
-            // Save the updated product
-            $product->save();
-
-            $no_products++;
         }
 
         $newTransaksi = TransaksiM::with('produk')->latest()->first();
@@ -105,8 +92,6 @@ class TransaksiC extends Controller
         return redirect()->route('transaksi.index')->with('error', 'Transaksi Gagal, Mohon coba lagi.');
     }
 }
-
-
     public function selesai($transaksi)
     {
         $transaksiData = TransaksiM::with('produk')->findOrFail($transaksi);
@@ -117,7 +102,7 @@ class TransaksiC extends Controller
     public function printStruk($id)
     {
         $transaksiData = TransaksiM::with('detailTransaksis.produk')->findOrFail($id);
-        $struk = [0,0,226.77,396.85];
+        $struk = [0,0,164,310];
 
         $pdf = PDF::loadView('transaksi.struk', compact('transaksiData'))
                 ->setPaper($struk, 'portrait');

@@ -33,30 +33,28 @@ class ProductC extends Controller
     public function storeProduct(Request $request)
     {
         try {
-        $request->validate([
-            'id_kategori' => 'required',
-            'nama_produk' => 'required|unique:products,nama_produk',
-            'harga_produk' => 'required',
-            'stok' => 'required|numeric',
-        ]);
-    
-        $kategori = KategoriM::where('nama_kategori', $request->input('id_kategori'))->first();
-    
-        if ($kategori) {
-            // Produk belum ada, tambahkan baru
-            ProdukM::create([
-                'nama_produk' => $request->input('nama_produk'),
-                'harga_produk' => $request->input('harga_produk'),
-                'id_kategori' => $kategori->id_kategori,
-                'stok' => $request->input('stok'),
+            $request->validate([
+                'kategori' => 'required',
+                'nama_produk' => 'required|unique:products,nama_produk',
+                'harga_produk' => 'required',
             ]);
     
-            LogM::create([
-                'id_user' => auth()->user()->id,
-                'activity' => 'Admin menambahkan produk baru',
-            ]);
+            $kategori = KategoriM::where('nama_kategori', $request->input('kategori'))->first();
     
-            return redirect()->route('product')->with('success', 'Berhasil Tambah Data Produk');
+            if ($kategori) {
+                // Produk belum ada, tambahkan baru
+                ProdukM::create([
+                    'nama_produk' => $request->input('nama_produk'),
+                    'harga_produk' => $request->input('harga_produk'),
+                    'kategori' => $kategori->nama_kategori, // Use the correct attribute name
+                ]);
+    
+                LogM::create([
+                    'id_user' => auth()->user()->id,
+                    'activity' => 'Admin menambahkan produk baru',
+                ]);
+    
+                return redirect()->route('product')->with('success', 'Berhasil Tambah Data Produk');
             }
         } catch (Exception $e) {
             return redirect()->route('product')->with('error', 'Gagal Menambahkan Data Produk, Mohon Coba Lagi');
@@ -76,8 +74,8 @@ class ProductC extends Controller
         $validatedData = $request->validate([
             'nama_produk' => 'required',
             'harga_produk' => 'required',
-            'id_kategori' => 'required|exists:kategori,nama_kategori', // Validasi agar nama_kategori ada di tabel kategori
-            'stok' => 'required',
+            'kategori' => 'required|exists:kategori,nama_kategori', // Validasi agar nama_kategori ada di tabel kategori
+            'status' => 'required',
         ]);
 
         try {
@@ -87,13 +85,13 @@ class ProductC extends Controller
             $namaProduk = $product->nama_produk;
 
             // Retrieve kategori based on the provided nama_kategori
-            $kategori = KategoriM::where('nama_kategori', $validatedData['id_kategori'])->first();
+            $kategori = KategoriM::where('nama_kategori', $request->input('kategori'))->first();
 
             $product->update([
                 'nama_produk' => $validatedData['nama_produk'],
                 'harga_produk' => $validatedData['harga_produk'],
-                'id_kategori' => $kategori->id_kategori,
-                'stok' => $validatedData['stok'],
+                'kategori' => $validatedData['kategori'],
+                'status' => $validatedData['status'],
             ]);
 
             LogM::create([
@@ -101,7 +99,7 @@ class ProductC extends Controller
                 'activity' => "Admin melakukan edit produk $namaProduk",
             ]);
 
-            return redirect()->route('product')->with('success', 'Berhasil Update Data Produk');
+            return redirect()->route('product')->with('success', "Berhasil Update Produk $namaProduk");
         } catch (Exception $e) {
             dd($e->getMessage());
             return redirect()->route('product')->with('error', 'Gagal Update Data Produk, Mohon Coba Lagi');
@@ -121,7 +119,7 @@ class ProductC extends Controller
                 'activity' => "Admin menghapus produk $namaProduk",
             ]);
 
-            return redirect()->route('product')->with('success', 'Berhasil Hapus Data Produk');
+            return redirect()->route('product')->with('success', "Berhasil Hapus Produk $namaProduk");
         } catch (Exception $e) {
             return redirect()->route('product')->with('error', 'Gagal Hapus Data Produk, Mohon Coba Lagi');
         }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nomor_unik', 10);
             $table->string('pilihan_makan');
             $table->integer('meja')->nullable();
+            $table->integer('sub_total');
             $table->integer('uang_bayar');
             $table->integer('uang_kembali');
             $table->timestamps();
